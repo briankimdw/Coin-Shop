@@ -1,0 +1,129 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import fs from "fs";
+import path from "path";
+
+// Helper to find post by slug OR id
+async function findPost(slugOrId: string) {
+  let post = await prisma.blogPost.findUnique({ where: { slug: slugOrId } });
+  if (!post) {
+    post = await prisma.blogPost.findUnique({ where: { id: slugOrId } });
+  }
+  return post;
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const post = await findPost(params.slug);
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+    return NextResponse.json(post);
+  } catch (error) {
+    console.error("Error fetching blog post:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch blog post" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const post = await findPost(params.slug);
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    const contentType = request.headers.get("content-type") || "";
+    let updateData: Record<string, unknown> = {};
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      updateData.title = formData.get("title") as string;
+      updateData.content = formData.get("content") as string;
+      updateData.excerpt = (formData.get("excerpt") as string) || null;
+      updateData.published = formData.get("published") === "true";
+
+      const tagsStr = formData.get("tags") as string;
+      if (tagsStr) {
+        updateData.tags = JSON.stringify(
+          tagsStr.split(",").map((t) => t.trim()).filter(Boolean)
+        );
+      }
+
+      if (formData.get("removeCover") === "true") {
+        updateData.coverImage = null;
+      }
+
+      const coverFile = formData.get("coverImage") as File | null;
+      if (coverFile && coverFile.size > 0) {
+        const uploadDir = path.join(process.cwd(), "public", "images", "uploads");
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        const buffer = Buffer.from(await coverFile.arrayBuffer());
+        const filename = `${Date.now()}-${coverFile.name}`;
+        fs.writeFileSync(path.join(uploadDir, filename), buffer);
+        updateData.coverImage = `/images/uploads/${filename}`;
+      }
+    } else {
+      const body = await request.json();
+      updateData = { ...body };
+      if (Array.isArray(updateData.tags)) {
+        updateData.tags = JSON.stringify(updateData.tags);
+      }
+    }
+
+    const updated = await prisma.blogPost.update({
+      where: { id: post.id },
+      data: updateData,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Error updating blog post:", error);
+    return NextResponse.json(
+      { error: "Failed to update blog post" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const post = await findPost(params.slug);
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    await prisma.blogPost.delete({ where: { id: post.id } });
+
+    return NextResponse.json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting blog post:", error);
+    return NextResponse.json(
+      { error: "Failed to delete blog post" },
+      { status: 500 }
+    );
+  }
+}

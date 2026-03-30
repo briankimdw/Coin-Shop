@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CoinListing {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  category      String
+  metal         String?
+  year          Int?
+  mintMark      String?
+  grade         String?
+  certification String?
+  certNumber    String?
+  description   String?
+  costBasis     Float?
+  askingPrice   Float
+  quantity      Int      @default(1)
+  featured      Boolean  @default(false)
+  sold          Boolean  @default(false)
+  images        String   @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  sales         Sale[]
+}
+
+model AppraisalRequest {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  phone         String?
+  description   String
+  images        String   @default("[]")
+  contactMethod String   @default("email")
+  status        String   @default("new")
+  adminNotes    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id         String   @id @default(cuid())
+  title      String
+  slug       String   @unique
+  content    String
+  excerpt    String?
+  coverImage String?
+  published  Boolean  @default(false)
+  author     String   @default("Admin")
+  tags       String   @default("[]")
+  metaTitle  String?
+  metaDesc   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model StoreSettings {
+  id                   String  @id @default("default")
+  shopName             String  @default("My Coin Shop")
+  tagline              String  @default("Your Trusted Local Coin Dealer")
+  address              String  @default("123 Main Street")
+  city                 String  @default("Springfield")
+  state                String  @default("IL")
+  zip                  String  @default("62701")
+  phone                String  @default("(555) 555-5555")
+  email                String  @default("info@coinshop.com")
+  heroTitle            String  @default("Buy, Sell & Trade Coins & Precious Metals")
+  heroSubtitle         String  @default("Serving collectors and investors for over 25 years")
+  aboutText            String  @default("")
+  ownerBio             String  @default("")
+  yearsInBusiness      String  @default("25+")
+  memberships          String  @default("[]")
+  logo                 String?
+  bannerImage          String?
+  isOpen               Boolean @default(true)
+  hoursJson            String  @default("[{\"day\":\"Monday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Tuesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Wednesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Thursday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Friday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Saturday\",\"open\":\"10:00 AM\",\"close\":\"3:00 PM\",\"closed\":false},{\"day\":\"Sunday\",\"open\":\"\",\"close\":\"\",\"closed\":true}]")
+  googleMapsUrl        String  @default("")
+  googleMapsEmbed      String  @default("")
+  socialFacebook       String  @default("")
+  socialInstagram      String  @default("")
+  socialTwitter        String  @default("")
+  autoFetchSpot        Boolean @default(true)
+  goldSpotOverride     Float?
+  silverSpotOverride   Float?
+  platinumSpotOverride Float?
+  palladiumSpotOverride Float?
+  goldBuyPremium       Float   @default(-5)
+  goldSellPremium      Float   @default(5)
+  silverBuyPremium     Float   @default(-10)
+  silverSellPremium    Float   @default(15)
+  platinumBuyPremium   Float   @default(-5)
+  platinumSellPremium  Float   @default(10)
+  palladiumBuyPremium  Float   @default(-5)
+  palladiumSellPremium Float   @default(10)
+  googlePlaceId        String  @default("")
+  googleApiKey         String  @default("")
+  smtpHost             String  @default("")
+  smtpPort             String  @default("")
+  smtpUser             String  @default("")
+  smtpPass             String  @default("")
+  smtpFrom             String  @default("")
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Sale {
+  id            String      @id @default(cuid())
+  coinListingId String
+  coinListing   CoinListing @relation(fields: [coinListingId], references: [id])
+  salePrice     Float
+  soldAt        DateTime    @default(now())
+  notes         String?
+  createdAt     DateTime    @default(now())
+}
+
+model InquiryReply {
+  id          String   @id @default(cuid())
+  inquiryId   String
+  inquiryType String
+  fromAdmin   Boolean  @default(true)
+  message     String
+  sentTo      String
+  sentAt      DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  text      String
+  rating    Int      @default(5)
+  featured  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Appointment {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String
+  date       String
+  timeSlot   String
+  type       String
+  status     String   @default("pending")
+  notes      String?
+  adminNotes String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model AppointmentSettings {
+  id               String @id @default("default")
+  slotDurationMin  Int    @default(30)
+  maxPerSlot       Int    @default(1)
+  advanceBookDays  Int    @default(30)
+  appointmentTypes String @default("[\"Appraisal\",\"Sell Coins\",\"Buy Consultation\",\"Collection Review\",\"Estate Evaluation\"]")
+  blockedDates     String @default("[]")
+}
+
+model WantToBuyItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String   @default("Coins")
+  priceRange  String?
+  featured    Boolean  @default(false)
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
