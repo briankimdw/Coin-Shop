@@ -33,11 +33,25 @@ export async function POST(
       );
     }
 
+    // Load shop name from settings for the email template
+    let shopName = "Vintage Coin Shop";
+    try {
+      const settings = await prisma.storeSettings.findUnique({
+        where: { id: "default" },
+        select: { shopName: true },
+      });
+      if (settings?.shopName) {
+        shopName = settings.shopName;
+      }
+    } catch {
+      // Use default shop name
+    }
+
     // Build branded HTML email
     const htmlContent = `
       <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #1B2A4A; padding: 24px; text-align: center;">
-          <h1 style="color: #C9A84C; margin: 0; font-size: 22px; letter-spacing: 0.5px;">Vintage Coin Shop</h1>
+          <h1 style="color: #C9A84C; margin: 0; font-size: 22px; letter-spacing: 0.5px;">${shopName}</h1>
         </div>
         <div style="padding: 32px 24px; background-color: #ffffff;">
           <p style="color: #374151; margin: 0 0 8px 0; font-size: 15px;">Dear ${toName || "Valued Customer"},</p>
@@ -49,14 +63,24 @@ export async function POST(
       </div>
     `;
 
-    // Attempt to send email
+    // Attempt to send email -- fail early if it doesn't work
     const emailResult = await sendEmail(
       toEmail,
-      `Re: Your Inquiry - Vintage Coin Shop`,
+      `Re: Your Inquiry - ${shopName}`,
       htmlContent
     );
 
-    // Create reply record
+    if (!emailResult.success) {
+      return NextResponse.json(
+        {
+          error: emailResult.error || "Failed to send email",
+          emailError: true,
+        },
+        { status: 500 }
+      );
+    }
+
+    // Only record the reply and update status after email sends successfully
     const reply = await prisma.inquiryReply.create({
       data: {
         inquiryId: params.id,
@@ -82,7 +106,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       reply,
-      emailSent: emailResult.success,
+      emailSent: true,
     });
   } catch (error) {
     console.error("Error sending reply:", error);

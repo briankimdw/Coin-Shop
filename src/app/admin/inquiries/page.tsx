@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { FaSpinner, FaSave, FaEnvelope, FaCamera, FaPhone, FaUser, FaPaperPlane, FaReply } from "react-icons/fa";
+import { FaSpinner, FaSave, FaEnvelope, FaCamera, FaPhone, FaUser, FaPaperPlane, FaReply, FaTimes } from "react-icons/fa";
 import { format } from "date-fns";
 
 interface Inquiry {
@@ -56,11 +56,25 @@ export default function InquiriesPage() {
   const [statuses, setStatuses] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
 
+  // Image lightbox state
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
   // Reply state
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
   const [replies, setReplies] = useState<Record<string, Reply[]>>({});
   const [sendingReply, setSendingReply] = useState<string | null>(null);
   const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>({});
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxImage(null);
+    };
+    if (lightboxImage) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [lightboxImage]);
 
   const fetchInquiries = async (type: string) => {
     setLoading(true);
@@ -315,13 +329,18 @@ export default function InquiriesPage() {
                         </label>
                         <div className="flex flex-wrap gap-3">
                           {images.map((img, i) => (
-                            <a key={i} href={img} target="_blank" rel="noopener noreferrer">
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => setLightboxImage(img)}
+                              className="cursor-pointer"
+                            >
                               <img
                                 src={img}
                                 alt={`Appraisal image ${i + 1}`}
                                 className="w-28 h-28 object-cover rounded-lg border border-gray-200 hover:opacity-80 hover:ring-2 hover:ring-[#C9A84C] transition-all"
                               />
-                            </a>
+                            </button>
                           ))}
                         </div>
                       </div>
@@ -447,6 +466,28 @@ export default function InquiriesPage() {
           })
         )}
       </div>
+
+      {/* Image Lightbox Modal */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+          >
+            <FaTimes className="text-2xl" />
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Appraisal image full view"
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
