@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,24 +19,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Handle image uploads (up to 5)
+    // Handle image uploads (up to 5) - convert to base64 data URLs
     const imageFiles = formData.getAll("images") as File[];
     const imagePaths: string[] = [];
-
-    const uploadDir = path.join(process.cwd(), "public", "images", "uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
 
     const maxImages = Math.min(imageFiles.length, 5);
     for (let i = 0; i < maxImages; i++) {
       const file = imageFiles[i];
       if (file && file.size > 0) {
         const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}-${file.name}`;
-        const filepath = path.join(uploadDir, filename);
-        fs.writeFileSync(filepath, buffer);
-        imagePaths.push(`/images/uploads/${filename}`);
+        const base64 = buffer.toString('base64');
+        const mimeType = file.type || 'image/jpeg';
+        imagePaths.push(`data:${mimeType};base64,${base64}`);
       }
     }
 

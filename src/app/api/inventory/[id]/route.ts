@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 
 export async function GET(
   request: NextRequest,
@@ -97,17 +95,15 @@ export async function PUT(
         try { currentImages = JSON.parse(existingImages); } catch { /* ignore */ }
       }
 
-      // Upload new images
+      // Upload new images - convert to base64 data URLs
       const newFiles = formData.getAll("images") as File[];
-      const uploadDir = path.join(process.cwd(), "public", "images", "coins");
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
       for (const file of newFiles) {
         if (file && file.size > 0) {
           const buffer = Buffer.from(await file.arrayBuffer());
-          const filename = `${Date.now()}-${file.name}`;
-          fs.writeFileSync(path.join(uploadDir, filename), buffer);
-          currentImages.push(`/images/coins/${filename}`);
+          const base64 = buffer.toString('base64');
+          const mimeType = file.type || 'image/jpeg';
+          currentImages.push(`data:${mimeType};base64,${base64}`);
         }
       }
 

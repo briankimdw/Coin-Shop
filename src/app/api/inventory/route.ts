@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 
 function slugify(text: string): string {
   return text
@@ -142,22 +140,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Handle image uploads
+    // Handle image uploads - convert to base64 data URLs
     const imageFiles = formData.getAll("images") as File[];
     const imagePaths: string[] = [];
-
-    const uploadDir = path.join(process.cwd(), "public", "images", "coins");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
 
     for (const file of imageFiles) {
       if (file && file.size > 0) {
         const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}-${file.name}`;
-        const filepath = path.join(uploadDir, filename);
-        fs.writeFileSync(filepath, buffer);
-        imagePaths.push(`/images/coins/${filename}`);
+        const base64 = buffer.toString('base64');
+        const mimeType = file.type || 'image/jpeg';
+        imagePaths.push(`data:${mimeType};base64,${base64}`);
       }
     }
 

@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 
 export const dynamic = "force-dynamic";
 
@@ -95,12 +93,10 @@ export async function POST(request: NextRequest) {
 
       const coverFile = formData.get("coverImage") as File | null;
       if (coverFile && coverFile.size > 0) {
-        const uploadDir = path.join(process.cwd(), "public", "images", "uploads");
-        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
         const buffer = Buffer.from(await coverFile.arrayBuffer());
-        const filename = `${Date.now()}-${coverFile.name}`;
-        fs.writeFileSync(path.join(uploadDir, filename), buffer);
-        coverImagePath = `/images/uploads/${filename}`;
+        const base64 = buffer.toString('base64');
+        const mimeType = coverFile.type || 'image/jpeg';
+        coverImagePath = `data:${mimeType};base64,${base64}`;
       }
     } else {
       const body = await request.json();

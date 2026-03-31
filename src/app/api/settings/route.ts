@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import fs from "fs";
-import path from "path";
 
 export async function GET() {
   try {
@@ -90,24 +88,21 @@ export async function PUT(request: NextRequest) {
         }
       }
 
-      // Handle file uploads
-      const uploadDir = path.join(process.cwd(), "public", "images", "uploads");
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
+      // Handle file uploads - convert to base64 data URLs
       const logoFile = formData.get("logo") as File | null;
       if (logoFile && logoFile.size > 0) {
         const buffer = Buffer.from(await logoFile.arrayBuffer());
-        const filename = `logo-${Date.now()}-${logoFile.name}`;
-        fs.writeFileSync(path.join(uploadDir, filename), buffer);
-        updateData.logo = `/images/uploads/${filename}`;
+        const base64 = buffer.toString('base64');
+        const mimeType = logoFile.type || 'image/jpeg';
+        updateData.logo = `data:${mimeType};base64,${base64}`;
       }
 
       const bannerFile = formData.get("banner") as File | null;
       if (bannerFile && bannerFile.size > 0) {
         const buffer = Buffer.from(await bannerFile.arrayBuffer());
-        const filename = `banner-${Date.now()}-${bannerFile.name}`;
-        fs.writeFileSync(path.join(uploadDir, filename), buffer);
-        updateData.bannerImage = `/images/uploads/${filename}`;
+        const base64 = buffer.toString('base64');
+        const mimeType = bannerFile.type || 'image/jpeg';
+        updateData.bannerImage = `data:${mimeType};base64,${base64}`;
       }
     } else {
       updateData = await request.json();
