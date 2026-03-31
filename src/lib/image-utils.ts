@@ -116,7 +116,7 @@ export async function processImageFiles(
     try {
       const result = await compressImage(file);
       compressed.push(result);
-    } catch (err) {
+    } catch {
       errors.push(`Failed to process "${file.name}".`);
     }
   }
