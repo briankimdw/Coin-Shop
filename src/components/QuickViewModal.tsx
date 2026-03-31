@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { FaTimes, FaExternalLinkAlt } from "react-icons/fa";
 import { formatPrice } from "@/lib/spot-prices";
 import { cn } from "@/lib/utils";
@@ -82,12 +81,10 @@ export default function QuickViewModal({ coin, onClose }: QuickViewModalProps) {
           {/* Image */}
           <div className="relative aspect-square w-full flex-shrink-0 bg-gray-50 sm:w-1/2">
             {primaryImage ? (
-              <Image
+              <img
                 src={primaryImage}
                 alt={coin.title}
-                fill
-                sizes="(max-width: 640px) 100vw, 50vw"
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">

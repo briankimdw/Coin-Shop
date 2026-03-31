@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { FaSave, FaSpinner, FaTimes, FaUpload } from "react-icons/fa";
+import { compressImage, validateImageFile } from "@/lib/image-utils";
 
 export default function EditBlogPostPage() {
   const router = useRouter();
@@ -30,7 +31,14 @@ export default function EditBlogPostPage() {
           title: data.title || "",
           content: data.content || "",
           excerpt: data.excerpt || "",
-          tags: Array.isArray(data.tags) ? data.tags.join(", ") : data.tags || "",
+          tags: (() => {
+            try {
+              const parsed = typeof data.tags === "string" ? JSON.parse(data.tags) : data.tags;
+              return Array.isArray(parsed) ? parsed.join(", ") : data.tags || "";
+            } catch {
+              return data.tags || "";
+            }
+          })(),
           published: data.published || false,
         });
         if (data.coverImage) {
@@ -59,14 +67,20 @@ export default function EditBlogPostPage() {
     }
   };
 
-  const handleCoverImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setCoverImage(file);
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+    const compressed = await compressImage(file);
+    setCoverImage(compressed);
     setExistingCover(null);
     const reader = new FileReader();
     reader.onload = (ev) => setCoverPreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const removeCover = () => {

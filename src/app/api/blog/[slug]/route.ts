@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+// Max 4MB per image file on server side
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+
 // Helper to find post by slug OR id
 async function findPost(slugOrId: string) {
   let post = await prisma.blogPost.findUnique({ where: { slug: slugOrId } });
@@ -50,7 +53,15 @@ export async function PUT(
     let updateData: Record<string, unknown> = {};
 
     if (contentType.includes("multipart/form-data")) {
-      const formData = await request.formData();
+      let formData: FormData;
+      try {
+        formData = await request.formData();
+      } catch {
+        return NextResponse.json(
+          { error: "Request too large. Please use a smaller image." },
+          { status: 413 }
+        );
+      }
       updateData.title = formData.get("title") as string;
       updateData.content = formData.get("content") as string;
       updateData.excerpt = (formData.get("excerpt") as string) || null;
@@ -69,6 +80,12 @@ export async function PUT(
 
       const coverFile = formData.get("coverImage") as File | null;
       if (coverFile && coverFile.size > 0) {
+        if (coverFile.size > MAX_IMAGE_SIZE) {
+          return NextResponse.json(
+            { error: "Cover image is too large. Maximum size is 4MB." },
+            { status: 413 }
+          );
+        }
         const buffer = Buffer.from(await coverFile.arrayBuffer());
         const base64 = buffer.toString('base64');
         const mimeType = coverFile.type || 'image/jpeg';

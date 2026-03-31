@@ -10,6 +10,7 @@ import {
   FaToggleOff,
 } from "react-icons/fa";
 import { HiChevronDown, HiChevronRight } from "react-icons/hi";
+import { compressImage, validateImageFile } from "@/lib/image-utils";
 
 const DAYS = [
   "Monday",
@@ -228,24 +229,30 @@ export default function SettingsPage() {
     });
   };
 
-  const handleFileChange = (
+  const handleFileChange = async (
     type: "logo" | "banner",
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+    const compressed = await compressImage(file);
     const reader = new FileReader();
     reader.onload = (ev) => {
       const result = ev.target?.result as string;
       if (type === "logo") {
-        setLogoFile(file);
+        setLogoFile(compressed);
         setLogoPreview(result);
       } else {
-        setBannerFile(file);
+        setBannerFile(compressed);
         setBannerPreview(result);
       }
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

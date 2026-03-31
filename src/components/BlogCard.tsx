@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { format } from "date-fns";
 import { truncate } from "@/lib/utils";
 
@@ -34,12 +33,10 @@ export default function BlogCard({ post }: BlogCardProps) {
       {/* Cover Image */}
       <Link href={`/blog/${post.slug}`} className="relative block aspect-[16/9] overflow-hidden bg-gray-50">
         {post.coverImage ? (
-          <Image
+          <img
             src={post.coverImage}
             alt={post.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">

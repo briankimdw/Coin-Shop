@@ -73,7 +73,7 @@ model BlogPost {
   slug       String   @unique
   content    String   @db.Text
   excerpt    String?  @db.Text
-  coverImage String?
+  coverImage String?  @db.Text
   published  Boolean  @default(false)
   author     String   @default("Admin")
   tags       String   @default("[]") @db.Text
@@ -99,8 +99,8 @@ model StoreSettings {
   ownerBio             String  @default("") @db.Text
   yearsInBusiness      String  @default("25+")
   memberships          String  @default("[]") @db.Text
-  logo                 String?
-  bannerImage          String?
+  logo                 String?  @db.Text
+  bannerImage          String?  @db.Text
   isOpen               Boolean @default(true)
   hoursJson            String  @default("[{\"day\":\"Monday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Tuesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Wednesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Thursday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Friday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Saturday\",\"open\":\"10:00 AM\",\"close\":\"3:00 PM\",\"closed\":false},{\"day\":\"Sunday\",\"open\":\"\",\"close\":\"\",\"closed\":true}]") @db.Text
   googleMapsUrl        String  @default("")

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/spot-prices";
@@ -116,13 +115,10 @@ export default async function CoinDetailPage({ params }: PageProps) {
           <div>
             <div className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-gray-50 shadow-sm">
               {images.length > 0 ? (
-                <Image
+                <img
                   src={images[0]}
                   alt={coin.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain"
-                  priority
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
@@ -139,12 +135,10 @@ export default async function CoinDetailPage({ params }: PageProps) {
                     key={i}
                     className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 border-[var(--border)] hover:border-[#C9A84C]/50 transition-all duration-300 cursor-pointer"
                   >
-                    <Image
+                    <img
                       src={img}
                       alt={`${coin.title} - Image ${i + 1}`}
-                      fill
-                      sizes="80px"
-                      className="object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
                   </div>
                 ))}
@@ -298,12 +292,10 @@ export default async function CoinDetailPage({ params }: PageProps) {
                   >
                     <div className="relative aspect-square overflow-hidden bg-gray-50">
                       {relImages.length > 0 ? (
-                        <Image
+                        <img
                           src={relImages[0]}
                           alt={related.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center">

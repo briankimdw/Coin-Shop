@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaSave, FaSpinner, FaTimes, FaUpload } from "react-icons/fa";
+import { compressImage, validateImageFile } from "@/lib/image-utils";
 
 export default function NewBlogPostPage() {
   const router = useRouter();
@@ -31,13 +32,19 @@ export default function NewBlogPostPage() {
     }
   };
 
-  const handleCoverImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setCoverImage(file);
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+    const compressed = await compressImage(file);
+    setCoverImage(compressed);
     const reader = new FileReader();
     reader.onload = (ev) => setCoverPreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const removeCover = () => {

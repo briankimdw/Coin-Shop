@@ -92,8 +92,9 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
     const file = new File([blob], `camera-${Date.now()}.jpg`, { type: mimeType });
 
     onCapture(file);
-    handleClose();
-  }, [capturedImage, onCapture]);
+    stopCamera();
+    onClose();
+  }, [capturedImage, onCapture, stopCamera, onClose]);
 
   const handleClose = useCallback(() => {
     stopCamera();

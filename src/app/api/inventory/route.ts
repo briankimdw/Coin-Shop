@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
+// Max 4MB per image file on server side
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -52,8 +57,8 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       where.OR = [
-        { title: { contains: search } },
-        { description: { contains: search } },
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -117,7 +122,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const formData = await request.formData();
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return NextResponse.json(
+        { error: "Request too large. Please use smaller images." },
+        { status: 413 }
+      );
+    }
 
     const title = formData.get("title") as string;
     const category = formData.get("category") as string;
@@ -146,6 +159,12 @@ export async function POST(request: NextRequest) {
 
     for (const file of imageFiles) {
       if (file && file.size > 0) {
+        if (file.size > MAX_IMAGE_SIZE) {
+          return NextResponse.json(
+            { error: `Image "${file.name}" is too large. Maximum size is 4MB per image.` },
+            { status: 413 }
+          );
+        }
         const buffer = Buffer.from(await file.arrayBuffer());
         const base64 = buffer.toString('base64');
         const mimeType = file.type || 'image/jpeg';

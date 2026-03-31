@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
+// Max 4MB per image file on server side
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+
 export async function GET() {
   try {
     const settings = await prisma.storeSettings.upsert({
@@ -32,7 +37,15 @@ export async function PUT(request: NextRequest) {
     let updateData: Record<string, unknown> = {};
 
     if (contentType.includes("multipart/form-data")) {
-      const formData = await request.formData();
+      let formData: FormData;
+      try {
+        formData = await request.formData();
+      } catch {
+        return NextResponse.json(
+          { error: "Request too large. Please use smaller images." },
+          { status: 413 }
+        );
+      }
       const settingsJson = formData.get("settings") as string;
 
       if (settingsJson) {
@@ -91,6 +104,12 @@ export async function PUT(request: NextRequest) {
       // Handle file uploads - convert to base64 data URLs
       const logoFile = formData.get("logo") as File | null;
       if (logoFile && logoFile.size > 0) {
+        if (logoFile.size > MAX_IMAGE_SIZE) {
+          return NextResponse.json(
+            { error: "Logo image is too large. Maximum size is 4MB." },
+            { status: 413 }
+          );
+        }
         const buffer = Buffer.from(await logoFile.arrayBuffer());
         const base64 = buffer.toString('base64');
         const mimeType = logoFile.type || 'image/jpeg';
@@ -99,6 +118,12 @@ export async function PUT(request: NextRequest) {
 
       const bannerFile = formData.get("banner") as File | null;
       if (bannerFile && bannerFile.size > 0) {
+        if (bannerFile.size > MAX_IMAGE_SIZE) {
+          return NextResponse.json(
+            { error: "Banner image is too large. Maximum size is 4MB." },
+            { status: 413 }
+          );
+        }
         const buffer = Buffer.from(await bannerFile.arrayBuffer());
         const base64 = buffer.toString('base64');
         const mimeType = bannerFile.type || 'image/jpeg';

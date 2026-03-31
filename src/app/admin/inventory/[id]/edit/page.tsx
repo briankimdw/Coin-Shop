@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { FaSave, FaSpinner, FaTimes, FaUpload, FaCamera } from "react-icons/fa";
 import { shopConfig } from "@/config/shop";
 import CameraCapture from "@/components/ui/CameraCapture";
+import { processImageFiles, compressImage } from "@/lib/image-utils";
 
 export default function EditInventoryPage() {
   const router = useRouter();
@@ -80,10 +81,14 @@ export default function EditInventoryPage() {
     }
   };
 
-  const handleImageAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setNewImages((prev) => [...prev, ...files]);
-    files.forEach((file) => {
+    const { compressed, errors } = await processImageFiles(files);
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+    }
+    setNewImages((prev) => [...prev, ...compressed]);
+    compressed.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         setNewPreviews((prev) => [...prev, ev.target?.result as string]);
@@ -93,13 +98,14 @@ export default function EditInventoryPage() {
     e.target.value = "";
   };
 
-  const handleCameraCapture = (file: File) => {
-    setNewImages((prev) => [...prev, file]);
+  const handleCameraCapture = async (file: File) => {
+    const compressed = await compressImage(file);
+    setNewImages((prev) => [...prev, compressed]);
     const reader = new FileReader();
     reader.onload = (ev) => {
       setNewPreviews((prev) => [...prev, ev.target?.result as string]);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const removeExistingImage = (url: string) => {

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { formatPrice } from "@/lib/spot-prices";
 import { cn } from "@/lib/utils";
 import { FaSearch } from "react-icons/fa";
@@ -61,12 +60,10 @@ export default function CoinCard({ coin, onQuickView }: CoinCardProps) {
       {/* Image */}
       <Link href={`/inventory/${coin.slug}`} className="relative block aspect-square overflow-hidden bg-gray-50">
         {primaryImage ? (
-          <Image
+          <img
             src={primaryImage}
             alt={coin.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">

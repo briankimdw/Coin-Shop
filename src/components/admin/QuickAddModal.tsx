@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaCamera, FaImages, FaTimes, FaArrowRight, FaSpinner } from "react-icons/fa";
 import CameraCapture from "@/components/ui/CameraCapture";
 import { shopConfig } from "@/config/shop";
+import { processImageFiles, compressImage } from "@/lib/image-utils";
 
 interface QuickAddModalProps {
   isOpen: boolean;
@@ -46,16 +47,21 @@ export default function QuickAddModal({ isOpen, onClose, onCreated }: QuickAddMo
     onClose();
   };
 
-  const handleCameraCapture = (file: File) => {
-    setCapturedPhotos((prev) => [...prev, file]);
-    const url = URL.createObjectURL(file);
+  const handleCameraCapture = async (file: File) => {
+    const compressed = await compressImage(file);
+    setCapturedPhotos((prev) => [...prev, compressed]);
+    const url = URL.createObjectURL(compressed);
     setPhotoPreviews((prev) => [...prev, url]);
     setShowCamera(false);
   };
 
-  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    for (const file of files) {
+    const { compressed, errors } = await processImageFiles(files);
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+    }
+    for (const file of compressed) {
       setCapturedPhotos((prev) => [...prev, file]);
       const url = URL.createObjectURL(file);
       setPhotoPreviews((prev) => [...prev, url]);

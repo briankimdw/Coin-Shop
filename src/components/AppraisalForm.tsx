@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { processImageFiles } from "@/lib/image-utils";
 
 export default function AppraisalForm() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ export default function AppraisalForm() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
     const totalImages = images.length + files.length;
 
@@ -32,12 +33,18 @@ export default function AppraisalForm() {
       return;
     }
 
-    const newImages = [...images, ...files];
+    const { compressed, errors } = await processImageFiles(files);
+    if (errors.length > 0) {
+      setErrorMessage(errors.join(" "));
+      if (compressed.length === 0) return;
+    }
+
+    const newImages = [...images, ...compressed];
     setImages(newImages);
 
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    const newPreviews = compressed.map((file) => URL.createObjectURL(file));
     setPreviews((prev) => [...prev, ...newPreviews]);
-    setErrorMessage("");
+    if (errors.length === 0) setErrorMessage("");
   }
 
   function removeImage(index: number) {

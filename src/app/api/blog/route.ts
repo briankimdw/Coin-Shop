@@ -5,6 +5,9 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+// Max 4MB per image file on server side
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -29,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (tag) {
-      where.tags = { contains: tag };
+      where.tags = { contains: tag, mode: "insensitive" };
     }
 
     const skip = (page - 1) * limit;
@@ -78,7 +81,15 @@ export async function POST(request: NextRequest) {
       tags = "[]";
 
     if (contentType.includes("multipart/form-data")) {
-      const formData = await request.formData();
+      let formData: FormData;
+      try {
+        formData = await request.formData();
+      } catch {
+        return NextResponse.json(
+          { error: "Request too large. Please use a smaller image." },
+          { status: 413 }
+        );
+      }
       title = formData.get("title") as string;
       content = formData.get("content") as string;
       excerpt = (formData.get("excerpt") as string) || null;
@@ -93,6 +104,12 @@ export async function POST(request: NextRequest) {
 
       const coverFile = formData.get("coverImage") as File | null;
       if (coverFile && coverFile.size > 0) {
+        if (coverFile.size > MAX_IMAGE_SIZE) {
+          return NextResponse.json(
+            { error: "Cover image is too large. Maximum size is 4MB." },
+            { status: 413 }
+          );
+        }
         const buffer = Buffer.from(await coverFile.arrayBuffer());
         const base64 = buffer.toString('base64');
         const mimeType = coverFile.type || 'image/jpeg';

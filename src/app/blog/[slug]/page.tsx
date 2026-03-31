@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import prisma from "@/lib/prisma";
@@ -62,13 +61,10 @@ export default async function BlogPostPage({ params }: PageProps) {
         {/* Cover Image */}
         {post.coverImage && (
           <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-2xl shadow-lg">
-            <Image
+            <img
               src={post.coverImage}
               alt={post.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
-              priority
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         )}
