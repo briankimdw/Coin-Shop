@@ -10,9 +10,11 @@ import {
   FaHandshake,
   FaDollarSign,
   FaChartLine,
-  FaClock,
   FaTimesCircle,
   FaSpinner,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaGlobe,
 } from "react-icons/fa";
 
 interface Stats {
@@ -27,8 +29,14 @@ interface Stats {
   inactiveClients: number;
   mrr: number;
   conversionRate: string;
+  sitesUp: number;
+  sitesDown: number;
+  overduePayments: number;
   recentLeads: Array<{ id: string; name: string; status: string; webStatus: string; createdAt: string }>;
-  recentClients: Array<{ id: string; shopName: string; status: string; monthlyRate: number; createdAt: string }>;
+  recentClients: Array<{
+    id: string; shopName: string; status: string; monthlyRate: number;
+    lastCheckStatus: string; siteUrl: string; paymentStatus: string; createdAt: string;
+  }>;
 }
 
 const statusColors: Record<string, string> = {
@@ -40,6 +48,13 @@ const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-800",
   pending: "bg-yellow-100 text-yellow-800",
   inactive: "bg-red-100 text-red-800",
+};
+
+const siteStatusIcons: Record<string, { icon: typeof FaCheckCircle; color: string }> = {
+  up: { icon: FaCheckCircle, color: "text-green-500" },
+  down: { icon: FaTimesCircle, color: "text-red-500" },
+  error: { icon: FaExclamationTriangle, color: "text-orange-500" },
+  unknown: { icon: FaGlobe, color: "text-gray-300" },
 };
 
 export default function ManageDashboard() {
@@ -64,18 +79,6 @@ export default function ManageDashboard() {
 
   if (!stats) return <p className="text-red-500">Failed to load stats.</p>;
 
-  const cards = [
-    { label: "Total Leads", value: stats.totalLeads, icon: FaUsers, color: "bg-blue-500" },
-    { label: "New Leads", value: stats.newLeads, icon: FaStar, color: "bg-green-500" },
-    { label: "Contacted", value: stats.contactedLeads, icon: FaPhone, color: "bg-amber-500" },
-    { label: "Interested", value: stats.interestedLeads, icon: FaThumbsUp, color: "bg-purple-500" },
-    { label: "Active Clients", value: stats.activeClients, icon: FaHandshake, color: "bg-emerald-600" },
-    { label: "MRR", value: `$${stats.mrr.toLocaleString()}`, icon: FaDollarSign, color: "bg-teal-600" },
-    { label: "Conversion", value: `${stats.conversionRate}%`, icon: FaChartLine, color: "bg-indigo-500" },
-    { label: "Pending", value: stats.pendingClients, icon: FaClock, color: "bg-orange-500" },
-    { label: "Not Interested", value: stats.notInterestedLeads, icon: FaTimesCircle, color: "bg-red-500" },
-  ];
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -88,17 +91,55 @@ export default function ManageDashboard() {
             Run Scraper
           </Link>
           <Link
-            href="/manage/leads"
+            href="/manage/clients"
             className="px-4 py-2 bg-[#1E293B] text-white rounded-lg hover:bg-slate-700 transition-colors text-sm font-medium"
           >
-            View Leads
+            Manage Sites
           </Link>
         </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {cards.map((card) => {
+      {/* Site Health Overview */}
+      {(stats.activeClients > 0 || stats.sitesDown > 0) && (
+        <div className={`rounded-xl p-5 ${stats.sitesDown > 0 ? "bg-red-50 border border-red-200" : "bg-green-50 border border-green-200"}`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {stats.sitesDown > 0 ? (
+                <FaExclamationTriangle className="text-2xl text-red-500" />
+              ) : (
+                <FaCheckCircle className="text-2xl text-green-500" />
+              )}
+              <div>
+                <h2 className="font-semibold text-gray-900">
+                  {stats.sitesDown > 0
+                    ? `${stats.sitesDown} site${stats.sitesDown > 1 ? "s" : ""} need attention`
+                    : "All sites operational"
+                  }
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {stats.sitesUp} up &middot; {stats.sitesDown} down &middot; {stats.overduePayments} overdue payment{stats.overduePayments !== 1 ? "s" : ""}
+                </p>
+              </div>
+            </div>
+            <Link href="/manage/clients" className="text-sm font-medium text-teal-600 hover:text-teal-700">
+              View all sites
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Key Metrics */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Active Clients", value: stats.activeClients, icon: FaHandshake, color: "bg-emerald-600" },
+          { label: "MRR", value: `$${stats.mrr.toLocaleString()}`, icon: FaDollarSign, color: "bg-teal-600" },
+          { label: "Total Leads", value: stats.totalLeads, icon: FaUsers, color: "bg-blue-500" },
+          { label: "Conversion", value: `${stats.conversionRate}%`, icon: FaChartLine, color: "bg-indigo-500" },
+          { label: "New Leads", value: stats.newLeads, icon: FaStar, color: "bg-green-500" },
+          { label: "Contacted", value: stats.contactedLeads, icon: FaPhone, color: "bg-amber-500" },
+          { label: "Interested", value: stats.interestedLeads, icon: FaThumbsUp, color: "bg-purple-500" },
+          { label: "Not Interested", value: stats.notInterestedLeads, icon: FaTimesCircle, color: "bg-red-500" },
+        ].map((card) => {
           const Icon = card.icon;
           return (
             <div key={card.label} className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
@@ -116,6 +157,49 @@ export default function ManageDashboard() {
 
       {/* Recent sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Client Sites */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Client Sites</h2>
+            <Link href="/manage/clients" className="text-sm text-teal-600 hover:text-teal-700">
+              View all
+            </Link>
+          </div>
+          {stats.recentClients.length === 0 ? (
+            <p className="text-gray-400 text-sm">No clients yet. Convert leads into paying clients.</p>
+          ) : (
+            <div className="space-y-3">
+              {stats.recentClients.map((client) => {
+                const siteInfo = siteStatusIcons[client.lastCheckStatus] || siteStatusIcons.unknown;
+                const SiteIcon = siteInfo.icon;
+                return (
+                  <div key={client.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <SiteIcon className={siteInfo.color} />
+                      <div>
+                        <p className="font-medium text-gray-900">{client.shopName}</p>
+                        {client.siteUrl && (
+                          <a href={client.siteUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-teal-600 hover:text-teal-700">
+                            {client.siteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-gray-700">
+                        ${client.monthlyRate}/mo
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[client.status] || "bg-gray-100 text-gray-600"}`}>
+                        {client.status}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Recent Leads */}
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
@@ -145,40 +229,6 @@ export default function ManageDashboard() {
                         No site
                       </span>
                     )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Clients */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Active Clients</h2>
-            <Link href="/manage/clients" className="text-sm text-teal-600 hover:text-teal-700">
-              View all
-            </Link>
-          </div>
-          {stats.recentClients.length === 0 ? (
-            <p className="text-gray-400 text-sm">No clients yet. Convert leads into paying clients.</p>
-          ) : (
-            <div className="space-y-3">
-              {stats.recentClients.map((client) => (
-                <div key={client.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                  <div>
-                    <p className="font-medium text-gray-900">{client.shopName}</p>
-                    <p className="text-xs text-gray-400">
-                      {new Date(client.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-700">
-                      ${client.monthlyRate}/mo
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[client.status] || "bg-gray-100 text-gray-600"}`}>
-                      {client.status}
-                    </span>
                   </div>
                 </div>
               ))}

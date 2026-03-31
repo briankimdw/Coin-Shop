@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,6 +23,9 @@ export async function GET() {
       mrrResult,
       recentLeads,
       recentClients,
+      sitesUp,
+      sitesDown,
+      overduePayments,
     ] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.count({ where: { status: "new" } }),
@@ -34,6 +39,9 @@ export async function GET() {
       prisma.client.aggregate({ where: { status: "active" }, _sum: { monthlyRate: true } }),
       prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
       prisma.client.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
+      prisma.client.count({ where: { lastCheckStatus: "up" } }),
+      prisma.client.count({ where: { lastCheckStatus: { in: ["down", "error"] } } }),
+      prisma.client.count({ where: { paymentStatus: "overdue" } }),
     ]);
 
     const mrr = mrrResult._sum.monthlyRate || 0;
@@ -53,6 +61,9 @@ export async function GET() {
       conversionRate,
       recentLeads,
       recentClients,
+      sitesUp,
+      sitesDown,
+      overduePayments,
     });
   } catch {
     return NextResponse.json({ error: "Failed to fetch stats" }, { status: 500 });

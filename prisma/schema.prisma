@@ -221,17 +221,26 @@ model Lead {
 }
 
 model Client {
-  id          String    @id @default(cuid())
-  shopName    String
-  ownerName   String    @default("")
-  email       String    @default("")
-  phone       String    @default("")
-  domain      String    @default("")
-  plan        String    @default("basic")
-  status      String    @default("pending")
-  monthlyRate Float     @default(0)
-  startDate   DateTime?
-  notes       String    @default("") @db.Text
+  id              String    @id @default(cuid())
+  shopName        String
+  ownerName       String    @default("")
+  email           String    @default("")
+  phone           String    @default("")
+  domain          String    @default("")
+  plan            String    @default("basic")
+  status          String    @default("pending")
+  monthlyRate     Float     @default(0)
+  startDate       DateTime?
+  notes           String    @default("") @db.Text
+  siteUrl         String    @default("")
+  adminUrl        String    @default("")
+  vercelProject   String    @default("")
+  lastCheckAt     DateTime?
+  lastCheckStatus String    @default("unknown")
+  paymentStatus   String    @default("unpaid")
+  lastPaidAt      DateTime?
+  contactEmail    String    @default("")
+  contactPhone    String    @default("")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

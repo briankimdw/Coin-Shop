@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -47,6 +49,12 @@ export async function POST(req: NextRequest) {
         monthlyRate: body.monthlyRate ? parseFloat(body.monthlyRate) : 0,
         startDate: body.startDate ? new Date(body.startDate) : null,
         notes: body.notes || "",
+        siteUrl: body.siteUrl || "",
+        adminUrl: body.adminUrl || "",
+        vercelProject: body.vercelProject || "",
+        paymentStatus: body.paymentStatus || "unpaid",
+        contactEmail: body.contactEmail || "",
+        contactPhone: body.contactPhone || "",
       },
     });
 
