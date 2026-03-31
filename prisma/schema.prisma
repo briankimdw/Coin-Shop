@@ -203,6 +203,39 @@ model WantToBuyItem {
   updatedAt   DateTime @updatedAt
 }
 
+model Lead {
+  id          String    @id @default(cuid())
+  name        String
+  address     String    @default("")
+  phone       String    @default("")
+  website     String    @default("")
+  webStatus   String    @default("unknown")
+  rating      Float?
+  reviews     Int       @default(0)
+  mapsUrl     String    @default("")
+  notes       String    @default("") @db.Text
+  status      String    @default("new")
+  contactedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Client {
+  id          String    @id @default(cuid())
+  shopName    String
+  ownerName   String    @default("")
+  email       String    @default("")
+  phone       String    @default("")
+  domain      String    @default("")
+  plan        String    @default("basic")
+  status      String    @default("pending")
+  monthlyRate Float     @default(0)
+  startDate   DateTime?
+  notes       String    @default("") @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model FAQ {
   id        String   @id @default(cuid())
   question  String   @db.Text
