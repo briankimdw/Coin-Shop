@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { verifyManageAuth, unauthorizedResponse } from "@/lib/manage-auth";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -31,8 +30,8 @@ async function checkSite(url: string): Promise<{ status: string; responseTime: n
 
 // POST: Check one or all client sites
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
+  const authed = await verifyManageAuth(); if (!authed) return unauthorizedResponse();
 
   try {
     const { clientId } = await req.json();

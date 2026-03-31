@@ -19,6 +19,9 @@ import {
   FaCog,
   FaDollarSign,
   FaGlobe,
+  FaCreditCard,
+  FaFileInvoiceDollar,
+  FaCopy,
 } from "react-icons/fa";
 
 interface Client {
@@ -42,6 +45,8 @@ interface Client {
   lastPaidAt: string | null;
   contactEmail: string;
   contactPhone: string;
+  stripeCustomerId: string;
+  setupFee: number;
   createdAt: string;
 }
 
@@ -101,6 +106,7 @@ const emptyForm = {
   plan: "basic",
   status: "pending",
   monthlyRate: "",
+  setupFee: "",
   startDate: "",
   notes: "",
   siteUrl: "",
@@ -120,6 +126,8 @@ export default function ClientsPage() {
   const [form, setForm] = useState(emptyForm);
   const [checkingAll, setCheckingAll] = useState(false);
   const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [billingId, setBillingId] = useState<string | null>(null);
+  const [invoiceLink, setInvoiceLink] = useState<{ id: string; url: string } | null>(null);
 
   const fetchClients = useCallback(() => {
     const params = filterStatus !== "all" ? `?status=${filterStatus}` : "";
@@ -174,9 +182,35 @@ export default function ClientsPage() {
       paymentStatus: client.paymentStatus,
       contactEmail: client.contactEmail,
       contactPhone: client.contactPhone,
+      setupFee: String(client.setupFee),
     });
     setEditingId(client.id);
     setShowForm(true);
+  };
+
+  const handleBilling = async (clientId: string, type: "setup" | "subscription") => {
+    setBillingId(clientId);
+    try {
+      const res = await fetch("/api/manage/billing/create-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId, type }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        setInvoiceLink({ id: clientId, url: data.url });
+      } else {
+        alert(data.error || "Failed to create billing session");
+      }
+    } catch {
+      alert("Network error");
+    }
+    setBillingId(null);
+  };
+
+  const copyLink = (url: string) => {
+    navigator.clipboard.writeText(url);
+    alert("Payment link copied to clipboard!");
   };
 
   const handleDelete = async (id: string) => {
@@ -343,6 +377,7 @@ export default function ClientsPage() {
                 {paymentOptions.map((p) => (<option key={p.value} value={p.value}>{p.label}</option>))}
               </select>
               <input type="number" step="0.01" value={form.monthlyRate} onChange={(e) => setForm({ ...form, monthlyRate: e.target.value })} placeholder="Monthly Rate ($)" className="px-3 py-2 border border-gray-200 rounded-lg text-sm" />
+              <input type="number" step="0.01" value={form.setupFee} onChange={(e) => setForm({ ...form, setupFee: e.target.value })} placeholder="Setup Fee ($)" className="px-3 py-2 border border-gray-200 rounded-lg text-sm" />
               <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="px-3 py-2 border border-gray-200 rounded-lg text-sm" />
             </div>
           </div>
@@ -448,11 +483,68 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
-                    {/* Right: Rate + Actions */}
+                    {/* Right: Rate + Billing + Actions */}
                     <div className="flex flex-col items-end gap-2">
                       <span className="text-xl font-bold text-gray-800">
                         ${client.monthlyRate}<span className="text-sm font-normal text-gray-400">/mo</span>
                       </span>
+                      {client.setupFee > 0 && (
+                        <span className="text-xs text-gray-400">Setup: ${client.setupFee}</span>
+                      )}
+
+                      {/* Billing buttons */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {client.monthlyRate > 0 && client.email && (
+                          <button
+                            onClick={() => handleBilling(client.id, "subscription")}
+                            disabled={billingId === client.id}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded text-xs font-medium hover:bg-emerald-100 disabled:opacity-50"
+                            title="Create monthly subscription link"
+                          >
+                            {billingId === client.id ? <FaSpinner className="animate-spin text-[10px]" /> : <FaCreditCard className="text-[10px]" />}
+                            Subscribe
+                          </button>
+                        )}
+                        {client.setupFee > 0 && client.email && (
+                          <button
+                            onClick={() => handleBilling(client.id, "setup")}
+                            disabled={billingId === client.id}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded text-xs font-medium hover:bg-amber-100 disabled:opacity-50"
+                            title="Create one-time setup fee link"
+                          >
+                            {billingId === client.id ? <FaSpinner className="animate-spin text-[10px]" /> : <FaFileInvoiceDollar className="text-[10px]" />}
+                            Setup Fee
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Show generated payment link */}
+                      {invoiceLink?.id === client.id && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <input
+                            readOnly
+                            value={invoiceLink.url}
+                            className="px-2 py-1 border border-gray-200 rounded text-xs w-40 truncate bg-gray-50"
+                          />
+                          <button
+                            onClick={() => copyLink(invoiceLink.url)}
+                            className="p-1 text-teal-600 hover:text-teal-700"
+                            title="Copy link"
+                          >
+                            <FaCopy className="text-xs" />
+                          </button>
+                          <a
+                            href={invoiceLink.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1 text-teal-600 hover:text-teal-700"
+                            title="Open link"
+                          >
+                            <FaExternalLinkAlt className="text-xs" />
+                          </a>
+                        </div>
+                      )}
+
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => checkSite(client.id)}

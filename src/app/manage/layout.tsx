@@ -1,8 +1,7 @@
 "use client";
 
-import { SessionProvider, useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
   FaHome,
@@ -23,27 +22,54 @@ const navLinks = [
   { href: "/manage/scraper", label: "Scraper", icon: FaSearch },
 ];
 
-function ManageLayoutInner({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
+export default function ManageLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [authState, setAuthState] = useState<"loading" | "authenticated" | "unauthenticated">("loading");
+
+  const checkAuth = useCallback(() => {
+    fetch("/api/manage/auth")
+      .then((r) => r.json())
+      .then((data) => {
+        setAuthState(data.authenticated ? "authenticated" : "unauthenticated");
+      })
+      .catch(() => setAuthState("unauthenticated"));
+  }, []);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/admin/login");
+    // Don't check auth on the login page
+    if (pathname === "/manage/login") {
+      setAuthState("authenticated"); // Let login page render
+      return;
     }
-  }, [status, router]);
+    checkAuth();
+  }, [pathname, checkAuth]);
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (authState === "unauthenticated" && pathname !== "/manage/login") {
+      router.push("/manage/login");
+    }
+  }, [authState, pathname, router]);
+
+  // Login page renders without the manage chrome
+  if (pathname === "/manage/login") {
+    return <>{children}</>;
+  }
+
+  if (authState === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-[#0F172A]">
         <FaSpinner className="animate-spin text-4xl text-teal-600" />
       </div>
     );
   }
 
-  if (status === "unauthenticated") {
+  if (authState === "unauthenticated") {
     return null;
   }
 
@@ -57,6 +83,11 @@ function ManageLayoutInner({ children }: { children: React.ReactNode }) {
     return segments
       .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
       .join(" / ");
+  };
+
+  const handleSignOut = async () => {
+    await fetch("/api/manage/auth", { method: "DELETE" });
+    router.push("/manage/login");
   };
 
   return (
@@ -126,17 +157,12 @@ function ManageLayoutInner({ children }: { children: React.ReactNode }) {
             Back to Site
           </Link>
           <button
-            onClick={() => signOut({ callbackUrl: "/admin/login" })}
+            onClick={handleSignOut}
             className="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-red-400 transition-colors text-sm w-full"
           >
             <FaSignOutAlt className="text-lg" />
             Sign Out
           </button>
-          {session?.user?.email && (
-            <p className="px-4 text-xs text-white/40 truncate">
-              {session.user.email}
-            </p>
-          )}
         </div>
       </aside>
 
@@ -153,17 +179,5 @@ function ManageLayoutInner({ children }: { children: React.ReactNode }) {
         <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
-  );
-}
-
-export default function ManageLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <SessionProvider>
-      <ManageLayoutInner>{children}</ManageLayoutInner>
-    </SessionProvider>
   );
 }

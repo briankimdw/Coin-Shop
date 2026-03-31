@@ -25,7 +25,7 @@ interface StoreInfo {
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/manage");
   const [store, setStore] = useState<StoreInfo | null>(null);
 
   useEffect(() => {

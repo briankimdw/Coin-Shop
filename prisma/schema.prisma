@@ -241,6 +241,8 @@ model Client {
   lastPaidAt      DateTime?
   contactEmail    String    @default("")
   contactPhone    String    @default("")
+  stripeCustomerId String   @default("")
+  setupFee        Float     @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
