@@ -11,7 +11,7 @@ import {
 import { FaFire } from "react-icons/fa";
 import PayoutEstimator from "@/components/PayoutEstimator";
 import prisma from "@/lib/prisma";
-import { cn } from "@/lib/utils";
+
 
 export const dynamic = 'force-dynamic';
 
