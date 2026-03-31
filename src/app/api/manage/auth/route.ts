@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
 
-const PIN = process.env.MANAGE_PIN || "";
+const PIN = process.env.MANAGE_PIN || "123456";
 const SECRET = process.env.NEXTAUTH_SECRET || "fallback-secret";
 const COOKIE_NAME = "manage_auth";
 
