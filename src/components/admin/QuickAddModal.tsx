@@ -120,22 +120,22 @@ export default function QuickAddModal({ isOpen, onClose, onCreated }: QuickAddMo
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={resetAndClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl shadow-black/20 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">
+          <h2 className="text-base font-bold text-[#1B2A4A]">
             {step === 1 ? "Add Photos" : "Quick Details"}
           </h2>
           <button
             onClick={resetAndClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-1.5 text-gray-300 hover:text-gray-500 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <FaTimes />
+            <FaTimes className="text-sm" />
           </button>
         </div>
 

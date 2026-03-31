@@ -164,36 +164,38 @@ export default function InventoryBrowser() {
     fetchListings();
   };
 
+  const filterInputClasses = "w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-[#1B2A4A] focus:border-[#C9A84C] focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)] transition-all duration-300";
+
   // Skeleton loader
   const SkeletonCard = () => (
-    <div className="animate-pulse overflow-hidden rounded-lg border border-gray-200 bg-white">
-      <div className="aspect-square bg-gray-200" />
-      <div className="space-y-3 p-4">
-        <div className="h-4 w-3/4 rounded bg-gray-200" />
-        <div className="h-3 w-1/2 rounded bg-gray-200" />
-        <div className="h-5 w-1/3 rounded bg-gray-200" />
+    <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-white">
+      <div className="aspect-square bg-gray-100 animate-shimmer" />
+      <div className="space-y-3 p-5">
+        <div className="h-4 w-3/4 rounded-full bg-gray-100 animate-shimmer" />
+        <div className="h-3 w-1/2 rounded-full bg-gray-100 animate-shimmer" />
+        <div className="h-5 w-1/3 rounded-full bg-gray-100 animate-shimmer" />
       </div>
     </div>
   );
 
-  // Sidebar filter content (shared between desktop sidebar and mobile drawer)
+  // Sidebar filter content
   const FilterContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {/* Categories */}
       <div>
-        <h3 className="mb-3 font-serif text-sm font-semibold uppercase tracking-wider text-gray-900">
+        <h3 className="mb-3 font-serif text-xs font-bold uppercase tracking-widest text-[#1B2A4A]">
           Category
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {shopConfig.categories.map((cat) => (
-            <label key={cat} className="flex cursor-pointer items-center gap-2">
+            <label key={cat} className="flex cursor-pointer items-center gap-2.5 group">
               <input
                 type="checkbox"
                 checked={selectedCategories.includes(cat)}
                 onChange={() => toggleCategory(cat)}
                 className="h-4 w-4 rounded border-gray-300 text-[#C9A84C] focus:ring-[#C9A84C]"
               />
-              <span className="text-sm text-gray-700">{cat}</span>
+              <span className="text-sm text-gray-600 group-hover:text-[#1B2A4A] transition-colors duration-200">{cat}</span>
             </label>
           ))}
         </div>
@@ -201,19 +203,19 @@ export default function InventoryBrowser() {
 
       {/* Metals */}
       <div>
-        <h3 className="mb-3 font-serif text-sm font-semibold uppercase tracking-wider text-gray-900">
+        <h3 className="mb-3 font-serif text-xs font-bold uppercase tracking-widest text-[#1B2A4A]">
           Metal
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {shopConfig.metals.filter((m) => ["Gold", "Silver", "Copper", "Platinum"].includes(m)).map((met) => (
-            <label key={met} className="flex cursor-pointer items-center gap-2">
+            <label key={met} className="flex cursor-pointer items-center gap-2.5 group">
               <input
                 type="checkbox"
                 checked={selectedMetals.includes(met)}
                 onChange={() => toggleMetal(met)}
                 className="h-4 w-4 rounded border-gray-300 text-[#C9A84C] focus:ring-[#C9A84C]"
               />
-              <span className="text-sm text-gray-700">{met}</span>
+              <span className="text-sm text-gray-600 group-hover:text-[#1B2A4A] transition-colors duration-200">{met}</span>
             </label>
           ))}
         </div>
@@ -221,7 +223,7 @@ export default function InventoryBrowser() {
 
       {/* Grade */}
       <div>
-        <h3 className="mb-3 font-serif text-sm font-semibold uppercase tracking-wider text-gray-900">
+        <h3 className="mb-3 font-serif text-xs font-bold uppercase tracking-widest text-[#1B2A4A]">
           Grade
         </h3>
         <select
@@ -230,7 +232,7 @@ export default function InventoryBrowser() {
             setGrade(e.target.value);
             setPage(1);
           }}
-          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-[#C9A84C] focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+          className={filterInputClasses}
         >
           <option value="">All Grades</option>
           {shopConfig.grades.map((g) => (
@@ -243,7 +245,7 @@ export default function InventoryBrowser() {
 
       {/* Price Range */}
       <div>
-        <h3 className="mb-3 font-serif text-sm font-semibold uppercase tracking-wider text-gray-900">
+        <h3 className="mb-3 font-serif text-xs font-bold uppercase tracking-widest text-[#1B2A4A]">
           Price Range
         </h3>
         <div className="flex items-center gap-2">
@@ -255,10 +257,10 @@ export default function InventoryBrowser() {
               setMinPrice(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-[#C9A84C] focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+            className={filterInputClasses}
             min="0"
           />
-          <span className="text-gray-400">&ndash;</span>
+          <span className="text-gray-300 flex-shrink-0">&ndash;</span>
           <input
             type="number"
             placeholder="Max"
@@ -267,7 +269,7 @@ export default function InventoryBrowser() {
               setMaxPrice(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-[#C9A84C] focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+            className={filterInputClasses}
             min="0"
           />
         </div>
@@ -275,7 +277,7 @@ export default function InventoryBrowser() {
 
       {/* Year Range */}
       <div>
-        <h3 className="mb-3 font-serif text-sm font-semibold uppercase tracking-wider text-gray-900">
+        <h3 className="mb-3 font-serif text-xs font-bold uppercase tracking-widest text-[#1B2A4A]">
           Year Range
         </h3>
         <div className="flex items-center gap-2">
@@ -287,9 +289,9 @@ export default function InventoryBrowser() {
               setMinYear(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-[#C9A84C] focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+            className={filterInputClasses}
           />
-          <span className="text-gray-400">&ndash;</span>
+          <span className="text-gray-300 flex-shrink-0">&ndash;</span>
           <input
             type="number"
             placeholder="Max"
@@ -298,7 +300,7 @@ export default function InventoryBrowser() {
               setMaxYear(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-[#C9A84C] focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+            className={filterInputClasses}
           />
         </div>
       </div>
@@ -307,7 +309,7 @@ export default function InventoryBrowser() {
       {hasActiveFilters && (
         <button
           onClick={clearFilters}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-gray-50 hover:text-[#1B2A4A] hover:border-gray-300"
         >
           Clear All Filters
         </button>
@@ -316,9 +318,9 @@ export default function InventoryBrowser() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Search Bar */}
-      <form onSubmit={handleSearchSubmit} className="mb-6">
+      <form onSubmit={handleSearchSubmit} className="mb-8">
         <div className="relative">
           <FaSearch className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
@@ -326,7 +328,7 @@ export default function InventoryBrowser() {
             placeholder="Search coins, bullion, currency..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white py-3 pl-11 pr-4 text-gray-900 placeholder-gray-400 focus:border-[#C9A84C] focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/20"
+            className="w-full rounded-xl border border-gray-200 bg-white py-3.5 pl-12 pr-4 text-[#1B2A4A] placeholder-gray-400 focus:border-[#C9A84C] focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)] transition-all duration-300 shadow-sm"
           />
           {search && (
             <button
@@ -335,7 +337,7 @@ export default function InventoryBrowser() {
                 setSearch("");
                 setPage(1);
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
             >
               <FaTimes className="h-4 w-4" />
             </button>
@@ -344,13 +346,13 @@ export default function InventoryBrowser() {
       </form>
 
       {/* Sort & Filter Controls (top bar) */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-gray-600">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <p className="text-sm text-gray-500">
           {loading ? (
-            <span className="inline-block h-4 w-32 animate-pulse rounded bg-gray-200" />
+            <span className="inline-block h-4 w-32 animate-shimmer rounded-full bg-gray-100" />
           ) : (
             <>
-              <span className="font-semibold text-gray-900">
+              <span className="font-bold text-[#1B2A4A]">
                 {pagination.total}
               </span>{" "}
               {pagination.total === 1 ? "result" : "results"} found
@@ -362,7 +364,7 @@ export default function InventoryBrowser() {
           {/* Mobile Filter Toggle */}
           <button
             onClick={() => setFiltersOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 lg:hidden"
+            className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:border-gray-300 lg:hidden"
           >
             <FaFilter className="h-3 w-3" />
             Filters
@@ -380,7 +382,7 @@ export default function InventoryBrowser() {
               setSort(e.target.value);
               setPage(1);
             }}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-[#C9A84C] focus:outline-none focus:ring-1 focus:ring-[#C9A84C]"
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-600 focus:border-[#C9A84C] focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)] transition-all duration-300"
           >
             {sortOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -394,8 +396,8 @@ export default function InventoryBrowser() {
       <div className="flex gap-8">
         {/* Desktop Sidebar */}
         <aside className="hidden w-64 flex-shrink-0 lg:block">
-          <div className="sticky top-24 rounded-lg border border-gray-200 bg-white p-5">
-            <h2 className="mb-4 font-serif text-lg font-bold text-gray-900">
+          <div className="sticky top-24 rounded-xl border border-[var(--border)] bg-white p-6 shadow-sm">
+            <h2 className="mb-5 font-serif text-lg font-bold text-[#1B2A4A]">
               Filters
             </h2>
             <FilterContent />
@@ -406,17 +408,17 @@ export default function InventoryBrowser() {
         {filtersOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             <div
-              className="absolute inset-0 bg-black/50"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setFiltersOpen(false)}
             />
-            <div className="absolute bottom-0 left-0 right-0 top-0 w-80 overflow-y-auto bg-white p-6 shadow-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-serif text-lg font-bold text-gray-900">
+            <div className="absolute bottom-0 left-0 right-0 top-0 w-80 overflow-y-auto bg-white p-7 shadow-2xl">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-[#1B2A4A]">
                   Filters
                 </h2>
                 <button
                   onClick={() => setFiltersOpen(false)}
-                  className="rounded-full p-2 text-gray-500 hover:bg-gray-100"
+                  className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all duration-200"
                 >
                   <FaTimes className="h-5 w-5" />
                 </button>
@@ -429,36 +431,26 @@ export default function InventoryBrowser() {
         {/* Results Grid */}
         <div className="flex-1">
           {loading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
             </div>
           ) : listings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 py-20">
-              <svg
-                className="mb-4 h-16 w-16 text-gray-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <p className="text-lg font-medium text-gray-500">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white py-20">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-5">
+                <FaSearch className="h-6 w-6 text-gray-300" />
+              </div>
+              <p className="text-lg font-serif font-bold text-gray-400">
                 No coins found
               </p>
-              <p className="mt-1 text-sm text-gray-400">
+              <p className="mt-2 text-sm text-gray-400">
                 Try adjusting your filters or search terms
               </p>
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="mt-4 rounded-lg bg-[#C9A84C] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#b8973f]"
+                  className="mt-6 rounded-lg bg-gradient-to-r from-[#C9A84C] to-[#B8942E] px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#C9A84C]/25"
                 >
                   Clear All Filters
                 </button>
@@ -466,7 +458,7 @@ export default function InventoryBrowser() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {listings.map((coin) => (
                   <CoinCard
                     key={coin.id}
@@ -478,15 +470,15 @@ export default function InventoryBrowser() {
 
               {/* Pagination */}
               {pagination.totalPages > 1 && (
-                <div className="mt-8 flex items-center justify-center gap-2">
+                <div className="mt-10 flex items-center justify-center gap-2">
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
                     className={cn(
-                      "flex items-center gap-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                      "flex items-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all duration-300",
                       page <= 1
-                        ? "cursor-not-allowed border-gray-200 text-gray-300"
-                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                        ? "cursor-not-allowed border-gray-100 text-gray-300"
+                        : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
                     )}
                   >
                     <FaChevronLeft className="h-3 w-3" />
@@ -512,7 +504,7 @@ export default function InventoryBrowser() {
                         typeof p === "string" ? (
                           <span
                             key={`ellipsis-${i}`}
-                            className="px-2 text-gray-400"
+                            className="px-2 text-gray-300"
                           >
                             ...
                           </span>
@@ -521,10 +513,10 @@ export default function InventoryBrowser() {
                             key={p}
                             onClick={() => setPage(p)}
                             className={cn(
-                              "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                              "rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-300",
                               page === p
-                                ? "bg-[#1B2A4A] text-white"
-                                : "text-gray-700 hover:bg-gray-100"
+                                ? "bg-[#1B2A4A] text-white shadow-sm"
+                                : "text-gray-600 hover:bg-gray-100"
                             )}
                           >
                             {p}
@@ -539,10 +531,10 @@ export default function InventoryBrowser() {
                     }
                     disabled={page >= pagination.totalPages}
                     className={cn(
-                      "flex items-center gap-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                      "flex items-center gap-1.5 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all duration-300",
                       page >= pagination.totalPages
-                        ? "cursor-not-allowed border-gray-200 text-gray-300"
-                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                        ? "cursor-not-allowed border-gray-100 text-gray-300"
+                        : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
                     )}
                   >
                     Next

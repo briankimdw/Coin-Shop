@@ -173,10 +173,10 @@ export default function TestimonialsAdminPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">
             Testimonials
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-400 mt-0.5">
             {testimonials.length} testimonials
           </p>
         </div>
@@ -184,9 +184,9 @@ export default function TestimonialsAdminPage() {
           <button
             onClick={fetchGoogleReviews}
             disabled={googleLoading}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-all font-medium text-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300 rounded-lg transition-all font-medium text-sm disabled:opacity-50"
           >
-            <FaGoogle className="text-sm" />
+            <FaGoogle className="text-xs" />
             {googleLoading ? "Loading..." : "Import from Google"}
           </button>
           <button
@@ -197,9 +197,9 @@ export default function TestimonialsAdminPage() {
                 setShowForm(true);
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm shadow-[#C9A84C]/25 text-sm"
           >
-            <FaPlus className="text-sm" />
+            <FaPlus className="text-xs" />
             {showForm ? "Cancel" : "Add Testimonial"}
           </button>
         </div>
@@ -209,9 +209,9 @@ export default function TestimonialsAdminPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 space-y-4"
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4"
         >
-          <h2 className="font-serif text-lg font-bold text-gray-900">
+          <h2 className="text-base font-bold text-[#1B2A4A]">
             {editingId ? "Edit Testimonial" : "New Testimonial"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -301,7 +301,7 @@ export default function TestimonialsAdminPage() {
           {testimonials.map((t) => (
             <div
               key={t.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-5"
+              className="bg-white rounded-xl border border-gray-200 p-5"
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -311,10 +311,10 @@ export default function TestimonialsAdminPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => toggleFeatured(t)}
-                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    className={`text-xs px-2 py-1 rounded-full font-semibold ${
                       t.featured
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-500"
+                        ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200"
+                        : "bg-gray-50 text-gray-500 ring-1 ring-gray-200"
                     }`}
                     title={t.featured ? "Click to unfeature" : "Click to feature"}
                   >
@@ -354,11 +354,11 @@ export default function TestimonialsAdminPage() {
 
       {/* Google Reviews Modal */}
       {showGoogleModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl shadow-black/20 max-w-2xl w-full max-h-[80vh] flex flex-col">
             <div className="p-5 border-b border-gray-200 flex items-center justify-between">
               <div>
-                <h2 className="font-serif text-lg font-bold text-gray-900">
+                <h2 className="text-base font-bold text-[#1B2A4A]">
                   Google Reviews
                 </h2>
                 <p className="text-sm text-gray-500">

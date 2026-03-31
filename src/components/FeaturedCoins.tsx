@@ -42,11 +42,14 @@ export default function FeaturedCoins() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl shadow-md p-4 animate-pulse"
+            className="bg-white rounded-xl border border-[var(--border)] p-0 overflow-hidden"
           >
-            <div className="w-full h-48 bg-gray-200 rounded-lg mb-4" />
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-            <div className="h-4 bg-gray-200 rounded w-1/2" />
+            <div className="w-full aspect-square bg-gray-100 animate-shimmer" />
+            <div className="p-5 space-y-3">
+              <div className="h-4 bg-gray-100 rounded-full w-3/4 animate-shimmer" />
+              <div className="h-3 bg-gray-100 rounded-full w-1/2 animate-shimmer" />
+              <div className="h-5 bg-gray-100 rounded-full w-1/3 animate-shimmer" />
+            </div>
           </div>
         ))}
       </div>
@@ -55,9 +58,9 @@ export default function FeaturedCoins() {
 
   if (coins.length === 0) {
     return (
-      <p className="text-center text-gray-500 py-8">
-        Check back soon for featured coins!
-      </p>
+      <div className="text-center py-12 rounded-2xl bg-white border border-[var(--border)]">
+        <p className="text-gray-400 text-lg">Check back soon for featured coins!</p>
+      </div>
     );
   }
 
@@ -78,33 +81,37 @@ export default function FeaturedCoins() {
             key={coin.id}
             href={`/inventory/${coin.slug}`}
             className={cn(
-              "group bg-white rounded-xl shadow-md",
-              "border border-gray-100",
-              "hover:shadow-xl hover:border-[#C9A84C]/50 transition-all duration-300",
-              "overflow-hidden"
+              "group bg-white rounded-xl",
+              "border border-[var(--border)]",
+              "hover:shadow-xl hover:shadow-[#1B2A4A]/8 hover:border-[#C9A84C]/30 transition-all duration-400",
+              "overflow-hidden hover:-translate-y-1"
             )}
           >
-            <div className="w-full h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+            <div className="w-full aspect-square bg-gray-50 flex items-center justify-center relative overflow-hidden">
               {hasImage ? (
                 <img
                   src={images[0]}
                   alt={coin.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               ) : (
-                <span className="text-6xl" role="img" aria-label="coin">
-                  🪙
-                </span>
+                <div className="flex flex-col items-center justify-center text-gray-300">
+                  <svg className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
+                  </svg>
+                </div>
               )}
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
             </div>
-            <div className="p-4">
-              <h3 className="font-semibold text-[#1B2A4A] group-hover:text-[#C9A84C] transition-colors line-clamp-2 mb-1">
+            <div className="p-5">
+              <h3 className="font-serif font-bold text-[#1B2A4A] group-hover:text-[#C9A84C] transition-colors duration-300 line-clamp-2 text-sm sm:text-[15px] leading-snug mb-2">
                 {coin.title}
               </h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                {coin.year && <span>{coin.year}</span>}
-                {coin.year && coin.grade && <span>&middot;</span>}
-                {coin.grade && <span>{coin.grade}</span>}
+              <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                {coin.year && <span className="font-medium">{coin.year}</span>}
+                {coin.year && coin.grade && <span className="opacity-50">&middot;</span>}
+                {coin.grade && <span className="font-medium">{coin.grade}</span>}
               </div>
               <p className="text-lg font-bold text-[#C9A84C]">
                 {formatPrice(coin.askingPrice)}

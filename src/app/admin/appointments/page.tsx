@@ -43,10 +43,10 @@ interface AppointmentSettings {
 }
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-700",
-  confirmed: "bg-green-100 text-green-700",
-  completed: "bg-blue-100 text-blue-700",
-  cancelled: "bg-red-100 text-red-700",
+  pending: "bg-amber-50 text-amber-600 ring-1 ring-amber-200",
+  confirmed: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200",
+  completed: "bg-blue-50 text-blue-600 ring-1 ring-blue-200",
+  cancelled: "bg-red-50 text-red-500 ring-1 ring-red-200",
 };
 
 const statusOptions = ["pending", "confirmed", "completed", "cancelled"];
@@ -243,8 +243,8 @@ export default function AdminAppointmentsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-[#1B2A4A]">Appointments</h1>
+        <p className="text-sm text-gray-400 mt-0.5">
           {totalCount} total appointment{totalCount !== 1 ? "s" : ""}
         </p>
       </div>
@@ -260,7 +260,7 @@ export default function AdminAppointmentsPage() {
             {todaysAppointments.map((appt) => (
               <div
                 key={`today-${appt.id}`}
-                className="bg-white rounded-xl border-2 border-amber-300 shadow-sm p-4 flex items-center justify-between flex-wrap gap-3"
+                className="bg-white rounded-xl border-2 border-amber-300 p-4 flex items-center justify-between flex-wrap gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-full bg-[#1B2A4A] flex items-center justify-center flex-shrink-0">
@@ -300,7 +300,7 @@ export default function AdminAppointmentsPage() {
       )}
 
       {/* Filter tabs */}
-      <div className="flex flex-wrap gap-1 mb-4 bg-gray-100 p-1 rounded-xl w-fit">
+      <div className="flex flex-wrap gap-0.5 mb-4 bg-gray-100 p-0.5 rounded-lg w-fit">
         {[
           { key: "all", label: "All" },
           { key: "pending", label: "Pending" },
@@ -314,15 +314,15 @@ export default function AdminAppointmentsPage() {
               setActiveFilter(tab.key);
               setExpandedId(null);
             }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeFilter === tab.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-900"
+                ? "bg-white text-[#1B2A4A] shadow-sm"
+                : "text-gray-400 hover:text-gray-600"
             }`}
           >
             {tab.label}
             {tab.key !== "all" && statusCounts[tab.key] ? (
-              <span className="ml-1 text-xs">({statusCounts[tab.key]})</span>
+              <span className="ml-1 text-xs opacity-60">({statusCounts[tab.key]})</span>
             ) : null}
           </button>
         ))}
@@ -347,7 +347,7 @@ export default function AdminAppointmentsPage() {
             <FaSpinner className="animate-spin text-3xl text-[#C9A84C]" />
           </div>
         ) : filteredAppointments.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+          <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
             <FaCalendarAlt className="text-5xl mx-auto mb-4 text-gray-200" />
             <p className="text-gray-500 font-medium">No appointments found</p>
           </div>
@@ -359,7 +359,7 @@ export default function AdminAppointmentsPage() {
             return (
               <div
                 key={appt.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all"
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all"
               >
                 {/* Header row */}
                 <button
@@ -545,7 +545,7 @@ export default function AdminAppointmentsPage() {
         </button>
 
         {showSettings && (
-          <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+          <div className="mt-4 bg-white rounded-xl border border-gray-200 p-6 space-y-6">
             {loadingSettings ? (
               <div className="flex justify-center py-8">
                 <FaSpinner className="animate-spin text-[#C9A84C] text-2xl" />

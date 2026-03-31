@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 async function getSettings() {
   return prisma.storeSettings.upsert({
     where: { id: "default" },

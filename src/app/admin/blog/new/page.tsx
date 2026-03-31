@@ -76,13 +76,16 @@ export default function NewBlogPostPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        New Blog Post
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#1B2A4A]">
+          New Blog Post
+        </h1>
+        <p className="text-sm text-gray-400 mt-0.5">Write and publish a new article</p>
+      </div>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-xl shadow-sm p-6 space-y-6 max-w-3xl"
+        className="bg-white rounded-xl border border-gray-200/80 p-6 space-y-6 max-w-3xl"
       >
         {/* Title */}
         <div>

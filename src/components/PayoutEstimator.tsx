@@ -38,7 +38,6 @@ export default function PayoutEstimator() {
           setSpotPrices(data);
         }
       } catch {
-        // Use fallback
         setSpotPrices({ gold: 2350, silver: 28.5, platinum: 985, palladium: 1050 });
       } finally {
         setLoading(false);
@@ -55,17 +54,31 @@ export default function PayoutEstimator() {
   const minOffer = spotPrice * weightNum * (payout?.min || 0) / 100;
   const maxOffer = spotPrice * weightNum * (payout?.max || 0) / 100;
 
-  return (
-    <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
-      <h3 className="text-xl font-serif font-bold text-[#1B2A4A] mb-6">
-        Payout Estimator
-      </h3>
+  const inputClasses = cn(
+    "w-full px-4 py-3 rounded-lg border",
+    "bg-white",
+    "border-gray-200",
+    "text-[#1B2A4A]",
+    "focus:outline-none focus:border-[#C9A84C] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)]",
+    "transition-all duration-300"
+  );
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-7 md:p-9 border border-[var(--border)]">
+      <div className="flex items-center gap-3 mb-7">
+        <div className="w-10 h-10 bg-[#C9A84C]/10 rounded-xl flex items-center justify-center">
+          <span className="text-[#C9A84C] text-xl">&#128176;</span>
+        </div>
+        <h3 className="text-xl font-serif font-bold text-[#1B2A4A]">
+          Payout Estimator
+        </h3>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-7">
         <div>
           <label
             htmlFor="item-type"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-semibold text-[#1B2A4A] mb-1.5"
           >
             Item Type
           </label>
@@ -73,13 +86,7 @@ export default function PayoutEstimator() {
             id="item-type"
             value={itemType}
             onChange={(e) => setItemType(e.target.value)}
-            className={cn(
-              "w-full px-4 py-3 rounded-lg border",
-              "bg-white",
-              "border-gray-300",
-              "text-gray-900",
-              "focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent"
-            )}
+            className={inputClasses}
           >
             {itemTypes.map((type) => (
               <option key={type} value={type}>
@@ -91,7 +98,7 @@ export default function PayoutEstimator() {
         <div>
           <label
             htmlFor="weight"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-semibold text-[#1B2A4A] mb-1.5"
           >
             Weight (troy oz)
           </label>
@@ -102,43 +109,38 @@ export default function PayoutEstimator() {
             step="0.01"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className={cn(
-              "w-full px-4 py-3 rounded-lg border",
-              "bg-white",
-              "border-gray-300",
-              "text-gray-900",
-              "focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent"
-            )}
+            className={inputClasses}
           />
         </div>
       </div>
 
       {loading ? (
-        <div className="text-center py-4 text-gray-500">
-          Loading spot prices...
+        <div className="text-center py-6">
+          <div className="animate-shimmer h-20 rounded-xl" />
         </div>
       ) : (
-        <div className="bg-gray-50 rounded-lg p-5 space-y-3">
-          <div className="flex justify-between text-sm text-gray-600">
+        <div className="bg-[var(--surface-alt)] rounded-xl p-6 space-y-4 border border-[var(--border)]">
+          <div className="flex justify-between text-sm text-gray-500">
             <span>Current {metal.charAt(0).toUpperCase() + metal.slice(1)} Spot Price:</span>
-            <span className="font-semibold">{formatPrice(spotPrice)} /oz</span>
+            <span className="font-bold text-[#1B2A4A] tabular-nums">{formatPrice(spotPrice)} /oz</span>
           </div>
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between text-sm text-gray-500">
             <span>Payout Range:</span>
-            <span className="font-semibold">
+            <span className="font-bold text-[#1B2A4A]">
               {payout?.min}% &ndash; {payout?.max}%
             </span>
           </div>
-          <hr className="border-gray-200" />
-          <div className="flex justify-between items-center">
-            <span className="text-gray-700 font-medium">
-              Estimated Offer:
-            </span>
-            <span className="text-xl font-bold text-[#C9A84C]">
-              {formatPrice(minOffer)} &ndash; {formatPrice(maxOffer)}
-            </span>
+          <div className="border-t border-[var(--border)] pt-4">
+            <div className="flex justify-between items-center">
+              <span className="text-[#1B2A4A] font-semibold">
+                Estimated Offer:
+              </span>
+              <span className="text-2xl font-bold text-[#C9A84C] tabular-nums">
+                {formatPrice(minOffer)} &ndash; {formatPrice(maxOffer)}
+              </span>
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-400 leading-relaxed">
             * Estimates are based on current spot prices and may vary. Final offers depend on item
             condition, rarity, and market demand. Visit us for an exact quote.
           </p>

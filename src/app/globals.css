@@ -6,8 +6,10 @@
 :root {
   /* Brand Colors */
   --gold: #C9A84C;
+  --gold-light: #e8d48b;
   --gold-dark: #B8942E;
   --navy: #1B2A4A;
+  --navy-light: #2a3f6a;
   --cream: #FAF7F0;
 
   /* Light Mode */
@@ -25,12 +27,15 @@
   --footer-text: #d1cfc9;
   --card-bg: #ffffff;
   --card-shadow: rgba(27, 42, 74, 0.08);
+  --card-shadow-hover: rgba(27, 42, 74, 0.16);
 }
 
 /* ===== Base Styles ===== */
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -38,7 +43,7 @@
     background: var(--background);
     font-family: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont,
       "Segoe UI", Roboto, sans-serif;
-    line-height: 1.6;
+    line-height: 1.7;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
@@ -53,6 +58,7 @@
     line-height: 1.2;
     font-weight: 700;
     color: var(--foreground);
+    letter-spacing: -0.01em;
   }
 
   a {
@@ -63,23 +69,36 @@
     max-width: 100%;
     height: auto;
   }
+
+  ::selection {
+    background-color: rgba(201, 168, 76, 0.2);
+    color: var(--navy);
+  }
 }
 
 /* ===== Component Styles ===== */
 @layer components {
+  /* Primary Button - Premium gold with depth */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-md px-6 py-3 font-semibold text-white transition-all duration-200;
-    background-color: var(--gold);
+    @apply inline-flex items-center justify-center rounded-lg px-7 py-3.5 font-semibold text-white transition-all duration-300;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    box-shadow: 0 2px 8px rgba(201, 168, 76, 0.25), 0 1px 2px rgba(201, 168, 76, 0.15);
   }
 
   .btn-primary:hover {
-    background-color: var(--gold-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
+    background: linear-gradient(135deg, var(--gold-dark) 0%, #a6831f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.35), 0 2px 8px rgba(201, 168, 76, 0.2);
   }
 
+  .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(201, 168, 76, 0.2);
+  }
+
+  /* Secondary Button - Refined outline */
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-md border-2 px-6 py-3 font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center rounded-lg border-2 px-7 py-3.5 font-semibold transition-all duration-300;
     border-color: var(--gold);
     color: var(--gold);
   }
@@ -87,21 +106,25 @@
   .btn-secondary:hover {
     background-color: var(--gold);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.25);
   }
 
+  /* Premium Card */
   .card {
     background-color: var(--card-bg);
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px var(--card-shadow);
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px var(--card-shadow), 0 1px 2px rgba(27, 42, 74, 0.04);
     border: 1px solid var(--border);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition: box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .card:hover {
-    box-shadow: 0 8px 24px var(--card-shadow);
-    transform: translateY(-2px);
+    box-shadow: 0 12px 40px var(--card-shadow-hover), 0 4px 12px rgba(27, 42, 74, 0.06);
+    transform: translateY(-4px);
   }
 
+  /* Section Heading with gold accent */
   .section-heading {
     @apply text-3xl font-bold mb-2;
     color: var(--foreground);
@@ -113,10 +136,11 @@
     width: 60px;
     height: 3px;
     margin-top: 0.75rem;
-    background-color: var(--gold);
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
     border-radius: 2px;
   }
 
+  /* Gradients */
   .gold-gradient {
     background: linear-gradient(135deg, #C9A84C 0%, #e8d48b 50%, #B8942E 100%);
   }
@@ -125,8 +149,9 @@
     background: linear-gradient(135deg, #1B2A4A 0%, #2a3f6a 50%, #1B2A4A 100%);
   }
 
+  /* Premium Input Fields */
   .input-field {
-    @apply w-full rounded-md border px-4 py-2.5 text-sm transition-all duration-200 outline-none;
+    @apply w-full rounded-lg border px-4 py-3 text-sm transition-all duration-300 outline-none;
     border-color: var(--border);
     background-color: var(--surface);
     color: var(--foreground);
@@ -134,7 +159,42 @@
 
   .input-field:focus {
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+    box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.12), 0 1px 2px rgba(201, 168, 76, 0.08);
+  }
+
+  .input-field::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Page Hero Section */
+  .page-hero {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, #1B2A4A 0%, #243558 40%, #1B2A4A 100%);
+  }
+
+  .page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(201, 168, 76, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(201, 168, 76, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Section Divider */
+  .section-divider {
+    @apply relative;
+  }
+
+  .section-divider::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
   }
 }
 
@@ -154,6 +214,12 @@
 
   .border-gold {
     border-color: var(--gold);
+  }
+
+  /* Subtle background pattern for hero sections */
+  .hero-pattern {
+    background-image: radial-gradient(circle at 25% 25%, rgba(201, 168, 76, 0.06) 0%, transparent 50%),
+                       radial-gradient(circle at 75% 75%, rgba(201, 168, 76, 0.04) 0%, transparent 50%);
   }
 }
 
@@ -179,10 +245,17 @@
   overflow: hidden;
 }
 
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ===== Custom Scrollbar ===== */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -191,7 +264,7 @@
 
 ::-webkit-scrollbar-thumb {
   background: var(--muted);
-  border-radius: 5px;
+  border-radius: 4px;
   border: 2px solid var(--surface-alt);
 }
 
@@ -274,11 +347,33 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -291,8 +386,34 @@
   }
 }
 
+@keyframes subtlePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes goldShine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
 }
 
 .animate-shimmer {
@@ -304,4 +425,22 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Staggered animation delays for list items */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* Gold text shimmer effect */
+.gold-shine {
+  background: linear-gradient(90deg, #C9A84C 0%, #e8d48b 25%, #C9A84C 50%, #e8d48b 75%, #C9A84C 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShine 4s linear infinite;
 }

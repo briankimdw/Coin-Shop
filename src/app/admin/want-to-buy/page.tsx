@@ -196,10 +196,10 @@ export default function WantToBuyAdminPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">
             Want to Buy
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-400 mt-0.5">
             {items.length} items &middot; {items.filter((i) => i.active).length}{" "}
             active
           </p>
@@ -209,9 +209,9 @@ export default function WantToBuyAdminPage() {
             if (showForm) resetForm();
             else setShowForm(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm shadow-[#C9A84C]/25 text-sm"
         >
-          <FaPlus className="text-sm" />
+          <FaPlus className="text-xs" />
           {showForm ? "Cancel" : "Add Item"}
         </button>
       </div>
@@ -220,9 +220,9 @@ export default function WantToBuyAdminPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 space-y-4"
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4"
         >
-          <h2 className="font-serif text-lg font-bold text-gray-900">
+          <h2 className="text-base font-bold text-[#1B2A4A]">
             {editingId ? "Edit Item" : "New Item"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -357,7 +357,7 @@ export default function WantToBuyAdminPage() {
           {items.map((item, idx) => (
             <div
               key={item.id}
-              className={`bg-white rounded-xl shadow-sm border p-5 ${
+              className={`bg-white rounded-xl border p-5 ${
                 item.active
                   ? "border-gray-200"
                   : "border-gray-200 opacity-60"
@@ -369,15 +369,15 @@ export default function WantToBuyAdminPage() {
                     <span className="text-xs font-mono text-gray-400">
                       #{item.sortOrder}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 ring-1 ring-blue-200 font-semibold">
                       {item.category}
                     </span>
                     <button
                       onClick={() => toggleActive(item)}
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                         item.active
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200"
+                          : "bg-gray-50 text-gray-500 ring-1 ring-gray-200"
                       }`}
                     >
                       {item.active ? "Active" : "Inactive"}
@@ -385,7 +385,7 @@ export default function WantToBuyAdminPage() {
                     {item.featured && (
                       <button
                         onClick={() => toggleFeatured(item)}
-                        className="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium flex items-center gap-1"
+                        className="text-xs px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 ring-1 ring-orange-200 font-semibold flex items-center gap-1"
                       >
                         <FaFire className="text-[10px]" /> Hot
                       </button>
@@ -393,7 +393,7 @@ export default function WantToBuyAdminPage() {
                     {!item.featured && (
                       <button
                         onClick={() => toggleFeatured(item)}
-                        className="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 font-medium"
+                        className="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-gray-400 ring-1 ring-gray-200 font-medium"
                         title="Click to feature"
                       >
                         Not Featured

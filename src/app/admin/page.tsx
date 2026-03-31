@@ -145,20 +145,23 @@ export default function AdminDashboardPage() {
   return (
     <div>
       {/* Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Welcome to your Dashboard
-        </h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">
+            Dashboard
+          </h1>
+          <p className="text-sm text-gray-400 mt-0.5">Overview of your coin shop</p>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setRecordSaleOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all font-medium text-sm"
           >
             <FaCashRegister className="text-xs" /> Record Sale
           </button>
           <button
             onClick={() => setQuickAddOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm shadow-[#C9A84C]/25 hover:shadow-md hover:shadow-[#C9A84C]/30 text-sm"
           >
             <FaCamera className="text-xs" /> Quick Add
           </button>
@@ -166,25 +169,25 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
             <div
               key={card.key}
-              className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4"
+              className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-4 hover:shadow-md hover:shadow-gray-100 transition-shadow duration-200"
             >
               <div
-                className={`w-12 h-12 rounded-lg ${card.bg} flex items-center justify-center`}
+                className={`w-11 h-11 rounded-xl ${card.bg} flex items-center justify-center`}
               >
-                <Icon className={`text-xl ${card.color}`} />
+                <Icon className={`text-lg ${card.color}`} />
               </div>
               <div>
-                <p className="text-sm text-gray-500">{card.label}</p>
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{card.label}</p>
                 {loading ? (
-                  <div className="h-7 w-20 bg-gray-200 rounded animate-pulse mt-1" />
+                  <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-1" />
                 ) : (
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-[#1B2A4A]">
                     {card.isPrice
                       ? formatPrice(stats?.[card.key] ?? 0)
                       : (stats?.[card.key] ?? 0).toLocaleString()}
@@ -196,18 +199,18 @@ export default function AdminDashboardPage() {
         })}
 
         {/* Revenue card */}
-        <div className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center">
-            <FaDollarSign className="text-xl text-emerald-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-4 hover:shadow-md hover:shadow-gray-100 transition-shadow duration-200">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center">
+            <FaDollarSign className="text-lg text-emerald-600" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
               Revenue ({period}d)
             </p>
             {analyticsLoading ? (
-              <div className="h-7 w-20 bg-gray-200 rounded animate-pulse mt-1" />
+              <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-[#1B2A4A]">
                 {formatPrice(analytics?.totalRevenue ?? 0)}
               </p>
             )}
@@ -215,16 +218,16 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Avg Sale Price card */}
-        <div className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
-            <FaCashRegister className="text-xl text-orange-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-4 hover:shadow-md hover:shadow-gray-100 transition-shadow duration-200">
+          <div className="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center">
+            <FaCashRegister className="text-lg text-orange-600" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Avg Sale Price</p>
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Avg Sale Price</p>
             {analyticsLoading ? (
-              <div className="h-7 w-20 bg-gray-200 rounded animate-pulse mt-1" />
+              <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-[#1B2A4A]">
                 {formatPrice(analytics?.averageSalePrice ?? 0)}
               </p>
             )}
@@ -232,16 +235,16 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Today's Appointments card */}
-        <div className="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-amber-50 flex items-center justify-center">
-            <FaCalendarAlt className="text-xl text-amber-600" />
+        <div className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-4 hover:shadow-md hover:shadow-gray-100 transition-shadow duration-200">
+          <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center">
+            <FaCalendarAlt className="text-lg text-amber-600" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Today&apos;s Appts</p>
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Today&apos;s Appts</p>
             {loading ? (
-              <div className="h-7 w-20 bg-gray-200 rounded animate-pulse mt-1" />
+              <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-1" />
             ) : (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-[#1B2A4A]">
                 {stats?.todayAppointments ?? 0}
               </p>
             )}
@@ -251,8 +254,8 @@ export default function AdminDashboardPage() {
 
       {/* Low Stock Alerts */}
       {!loading && stats?.lowStockItems && stats.lowStockItems.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-3 flex items-center gap-2 uppercase tracking-wide">
             <FaExclamationTriangle className="text-amber-500" />
             Low Stock Alerts
           </h2>
@@ -286,9 +289,9 @@ export default function AdminDashboardPage() {
 
       {/* Today's Appointments */}
       {!loading && (
-        <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FaCalendarAlt className="text-amber-500" />
+        <div className="bg-white rounded-xl border border-gray-100 p-5 mb-8">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-4 flex items-center gap-2 uppercase tracking-wide">
+            <FaCalendarAlt className="text-[#C9A84C]" />
             Today&apos;s Appointments
             {stats?.pendingAppointments ? (
               <span className="text-xs font-normal bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
@@ -332,28 +335,28 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* Period Selector */}
-      <div className="flex items-center gap-2 mb-4">
-        {([7, 30, 90] as Period[]).map((p) => (
-          <button
-            key={p}
-            onClick={() => setPeriod(p)}
-            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              period === p
-                ? "bg-[#C9A84C] text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-            }`}
-          >
-            {p}d
-          </button>
-        ))}
-      </div>
-
-      {/* Sales Chart */}
-      <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Sales Revenue
-        </h2>
+      {/* Period Selector + Sales Chart */}
+      <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] uppercase tracking-wide">
+            Sales Revenue
+          </h2>
+          <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg">
+            {([7, 30, 90] as Period[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                  period === p
+                    ? "bg-white text-[#1B2A4A] shadow-sm"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                {p}d
+              </button>
+            ))}
+          </div>
+        </div>
         {analyticsLoading ? (
           <div className="h-[240px] flex items-center justify-center">
             <div className="h-6 w-6 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
@@ -373,8 +376,8 @@ export default function AdminDashboardPage() {
       {/* Bottom section: Top Categories + Recent Sales */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Categories */}
-        <div className="bg-white rounded-xl shadow-sm p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-4 uppercase tracking-wide">
             Top Categories
           </h2>
           {analyticsLoading ? (
@@ -417,8 +420,8 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Recent Sales */}
-        <div className="bg-white rounded-xl shadow-sm p-5 lg:col-span-2">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 lg:col-span-2">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-4 uppercase tracking-wide">
             Recent Sales
           </h2>
           {analyticsLoading ? (

@@ -250,36 +250,24 @@ export default function AdminInventoryPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">
             Inventory
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-400 mt-0.5">
             {total} total items
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/admin/inventory/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md text-sm"
-          >
-            <FaPlus className="text-xs" /> Add New
-          </Link>
-          <button
-            onClick={() => setQuickAddOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md text-sm"
-          >
-            <FaCamera className="text-xs" /> Quick Add
-          </button>
           <button
             onClick={handleExport}
-            className="inline-flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-sm"
           >
-            <FaFileExport /> Export
+            <FaFileExport className="text-xs" /> Export
           </button>
-          <label className="inline-flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm cursor-pointer">
-            {importing ? <FaSpinner className="animate-spin" /> : <FaFileImport />}
+          <label className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-sm cursor-pointer">
+            {importing ? <FaSpinner className="animate-spin text-xs" /> : <FaFileImport className="text-xs" />}
             Import
             <input
               ref={fileInputRef}
@@ -289,6 +277,18 @@ export default function AdminInventoryPage() {
               className="hidden"
             />
           </label>
+          <button
+            onClick={() => setQuickAddOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1B2A4A] hover:bg-[#1B2A4A]/90 text-white rounded-lg transition-all font-medium text-sm"
+          >
+            <FaCamera className="text-xs" /> Quick Add
+          </button>
+          <Link
+            href="/admin/inventory/new"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm shadow-[#C9A84C]/25 text-sm"
+          >
+            <FaPlus className="text-xs" /> Add New
+          </Link>
         </div>
       </div>
 
@@ -338,11 +338,11 @@ export default function AdminInventoryPage() {
       </div>
 
       {/* Desktop Table (hidden on small screens) */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="hidden md:block bg-white rounded-xl border border-gray-200/80 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-gray-50/80 border-b border-gray-200/80">
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Item
                 </th>

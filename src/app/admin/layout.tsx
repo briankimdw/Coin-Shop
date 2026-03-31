@@ -94,16 +94,21 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1B2A4A] text-white transform transition-transform lg:transform-none ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1B2A4A] text-white transform transition-transform duration-200 ease-in-out lg:transform-none ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        } flex flex-col`}
+        } flex flex-col shadow-xl lg:shadow-none`}
       >
         {/* Shop name */}
-        <div className="p-6 border-b border-white/10">
+        <div className="px-5 py-5 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <FaCoins className="text-[#C9A84C] text-xl" />
-              <span className="font-bold text-lg">{shopName}</span>
+              <div className="w-9 h-9 rounded-lg bg-[#C9A84C]/20 flex items-center justify-center">
+                <FaCoins className="text-[#C9A84C] text-sm" />
+              </div>
+              <div>
+                <span className="font-bold text-sm tracking-wide">{shopName}</span>
+                <p className="text-[10px] text-white/40 font-medium uppercase tracking-widest">Admin</p>
+              </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -115,7 +120,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Nav links */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const active = isActive(link.href);
@@ -124,13 +129,13 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                 key={link.href}
                 href={link.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 text-[13px] ${
                   active
-                    ? "bg-[#C9A84C] text-white font-semibold"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "bg-[#C9A84C]/15 text-[#C9A84C] font-semibold border-l-[3px] border-[#C9A84C] ml-0 pl-[9px]"
+                    : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
                 }`}
               >
-                <Icon className="text-lg" />
+                <Icon className={`text-base ${active ? "text-[#C9A84C]" : ""}`} />
                 {link.label}
               </Link>
             );
@@ -138,23 +143,23 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Bottom section */}
-        <div className="p-4 border-t border-white/10 space-y-2">
+        <div className="p-3 border-t border-white/10 space-y-1">
           <Link
             href="/"
-            className="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-white transition-colors text-sm"
+            className="flex items-center gap-3 px-3 py-2 text-white/50 hover:text-white/80 transition-colors text-[13px] rounded-lg hover:bg-white/[0.06]"
           >
-            <FaHome className="text-lg" />
+            <FaHome className="text-sm" />
             Back to Site
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/admin/login" })}
-            className="flex items-center gap-3 px-4 py-2 text-white/70 hover:text-red-400 transition-colors text-sm w-full"
+            className="flex items-center gap-3 px-3 py-2 text-white/50 hover:text-red-400 transition-colors text-[13px] w-full rounded-lg hover:bg-white/[0.06]"
           >
-            <FaSignOutAlt className="text-lg" />
+            <FaSignOutAlt className="text-sm" />
             Sign Out
           </button>
           {session?.user?.email && (
-            <p className="px-4 text-xs text-white/40 truncate">
+            <p className="px-3 pt-1 text-[11px] text-white/30 truncate">
               {session.user.email}
             </p>
           )}
@@ -162,22 +167,22 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
         {/* Top bar */}
-        <header className="bg-white shadow-sm px-6 py-4 flex items-center gap-4">
+        <header className="bg-white border-b border-gray-200/80 px-6 py-3.5 flex items-center gap-4 sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-gray-600 hover:text-gray-900"
+            className="lg:hidden text-gray-400 hover:text-gray-700 transition-colors"
           >
-            <HiMenuAlt2 className="text-2xl" />
+            <HiMenuAlt2 className="text-xl" />
           </button>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs font-medium text-gray-400 tracking-wide">
             {breadcrumb()}
           </p>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6 bg-gray-50/80">{children}</main>
       </div>
     </div>
   );

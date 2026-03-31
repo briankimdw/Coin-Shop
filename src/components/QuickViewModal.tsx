@@ -14,16 +14,16 @@ interface QuickViewModalProps {
 }
 
 function getGradeBadgeColor(grade: string | null | undefined): string {
-  if (!grade) return "bg-gray-200 text-gray-700";
+  if (!grade) return "bg-gray-100 text-gray-600";
   if (grade.startsWith("MS-7") || grade.startsWith("PF-7"))
-    return "bg-emerald-100 text-emerald-800";
+    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
   if (grade.startsWith("MS-6") || grade.startsWith("PF-6"))
-    return "bg-blue-100 text-blue-800";
+    return "bg-blue-50 text-blue-700 border border-blue-200";
   if (grade.startsWith("AU") || grade.startsWith("EF"))
-    return "bg-amber-100 text-amber-800";
+    return "bg-amber-50 text-amber-700 border border-amber-200";
   if (grade.startsWith("VF") || grade.startsWith("F-"))
-    return "bg-orange-100 text-orange-800";
-  return "bg-gray-200 text-gray-700";
+    return "bg-orange-50 text-orange-700 border border-orange-200";
+  return "bg-gray-100 text-gray-600";
 }
 
 function parseImages(imagesJson: string): string[] {
@@ -66,13 +66,13 @@ export default function QuickViewModal({ coin, onClose }: QuickViewModalProps) {
     <div
       ref={overlayRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in"
     >
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-2xl">
+      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-3 top-3 z-10 rounded-full bg-gray-100 p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
+          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2.5 text-gray-400 shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-gray-600 hover:scale-110"
           aria-label="Close modal"
         >
           <FaTimes className="h-4 w-4" />
@@ -80,7 +80,7 @@ export default function QuickViewModal({ coin, onClose }: QuickViewModalProps) {
 
         <div className="flex flex-col sm:flex-row">
           {/* Image */}
-          <div className="relative aspect-square w-full flex-shrink-0 bg-gray-100 sm:w-1/2">
+          <div className="relative aspect-square w-full flex-shrink-0 bg-gray-50 sm:w-1/2">
             {primaryImage ? (
               <Image
                 src={primaryImage}
@@ -90,7 +90,7 @@ export default function QuickViewModal({ coin, onClose }: QuickViewModalProps) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full items-center justify-center">
+              <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
                 <svg
                   className="h-20 w-20 text-gray-300"
                   fill="none"
@@ -105,26 +105,26 @@ export default function QuickViewModal({ coin, onClose }: QuickViewModalProps) {
           </div>
 
           {/* Details */}
-          <div className="flex flex-1 flex-col p-6">
-            <h2 className="font-serif text-xl font-bold text-gray-900">
+          <div className="flex flex-1 flex-col p-7">
+            <h2 className="font-serif text-xl font-bold text-[#1B2A4A]">
               {coin.title}
             </h2>
 
-            <div className="mt-3 space-y-2">
+            <div className="mt-4 space-y-2.5">
               {coin.year && (
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">Year:</span>{" "}
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-[#1B2A4A]">Year:</span>{" "}
                   {coin.year}
                   {coin.mintMark ? ` (${coin.mintMark})` : ""}
                 </p>
               )}
 
               {coin.grade && (
-                <p className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">Grade:</span>
+                <p className="flex items-center gap-2 text-sm text-gray-500">
+                  <span className="font-semibold text-[#1B2A4A]">Grade:</span>
                   <span
                     className={cn(
-                      "rounded-full px-2.5 py-0.5 text-xs font-medium",
+                      "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
                       getGradeBadgeColor(coin.grade)
                     )}
                   >
@@ -134,40 +134,40 @@ export default function QuickViewModal({ coin, onClose }: QuickViewModalProps) {
               )}
 
               {coin.certification && coin.certification !== "Raw" && (
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">Certification:</span>{" "}
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-[#1B2A4A]">Certification:</span>{" "}
                   {coin.certification}
                   {coin.certNumber ? ` #${coin.certNumber}` : ""}
                 </p>
               )}
 
-              <p className="text-sm text-gray-600">
-                <span className="font-medium text-gray-900">Category:</span>{" "}
+              <p className="text-sm text-gray-500">
+                <span className="font-semibold text-[#1B2A4A]">Category:</span>{" "}
                 {coin.category}
               </p>
 
               {coin.metal && (
-                <p className="text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">Metal:</span>{" "}
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-[#1B2A4A]">Metal:</span>{" "}
                   {coin.metal}
                 </p>
               )}
             </div>
 
             {coin.description && (
-              <p className="mt-4 line-clamp-4 text-sm leading-relaxed text-gray-600">
+              <p className="mt-5 line-clamp-3 text-sm leading-relaxed text-gray-500">
                 {coin.description}
               </p>
             )}
 
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-7">
               <p className="text-2xl font-bold text-[#C9A84C]">
                 {formatPrice(coin.askingPrice)}
               </p>
 
               <Link
                 href={`/inventory/${coin.slug}`}
-                className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-[#1B2A4A] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2a3d66]"
+                className="mt-5 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#1B2A4A] to-[#243558] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1B2A4A]/25"
               >
                 View Full Details
                 <FaExternalLinkAlt className="h-3 w-3" />

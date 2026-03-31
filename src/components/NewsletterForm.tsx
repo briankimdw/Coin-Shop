@@ -34,8 +34,17 @@ export default function NewsletterForm() {
     }
   }
 
+  if (status === "success") {
+    return (
+      <div className="max-w-md mx-auto rounded-xl bg-green-500/10 border border-green-500/20 p-6 text-center">
+        <div className="text-green-400 text-3xl mb-2">&#10003;</div>
+        <p className="text-green-400 font-semibold">{message}</p>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
       <div className="flex-1">
         <label htmlFor="newsletter-email" className="sr-only">
           Email address
@@ -48,11 +57,13 @@ export default function NewsletterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={cn(
-            "w-full px-4 py-3 rounded-lg border bg-white",
-            "border-gray-300",
-            "text-gray-900",
-            "placeholder-gray-500",
-            "focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent"
+            "w-full px-5 py-3.5 rounded-lg border",
+            "bg-white/10 backdrop-blur-sm",
+            "border-white/20",
+            "text-white",
+            "placeholder-white/40",
+            "focus:outline-none focus:border-[#C9A84C] focus:bg-white/15 focus:shadow-[0_0_0_3px_rgba(201,168,76,0.15)]",
+            "transition-all duration-300"
           )}
         />
       </div>
@@ -60,18 +71,16 @@ export default function NewsletterForm() {
         type="submit"
         disabled={status === "loading"}
         className={cn(
-          "px-6 py-3 rounded-lg font-semibold transition-colors",
-          "bg-[#C9A84C] hover:bg-[#b8963f] text-white",
-          "disabled:opacity-50 disabled:cursor-not-allowed"
+          "px-8 py-3.5 rounded-lg font-semibold transition-all duration-300",
+          "bg-gradient-to-r from-[#C9A84C] to-[#B8942E] text-white",
+          "hover:shadow-lg hover:shadow-[#C9A84C]/30 hover:-translate-y-0.5",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         )}
       >
         {status === "loading" ? "Subscribing..." : "Subscribe"}
       </button>
-      {status === "success" && (
-        <p className="text-green-600 text-sm self-center">{message}</p>
-      )}
       {status === "error" && (
-        <p className="text-red-600 text-sm self-center">{message}</p>
+        <p className="text-red-400 text-sm self-center sm:absolute sm:bottom-0 sm:translate-y-full sm:pt-2">{message}</p>
       )}
     </form>
   );

@@ -7,21 +7,23 @@ import { formatPrice } from "@/lib/spot-prices";
 import { parseJsonField, cn } from "@/lib/utils";
 import { JsonLd } from "@/components/JsonLd";
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: { slug: string };
 }
 
 function getGradeBadgeColor(grade: string | null | undefined): string {
-  if (!grade) return "bg-gray-200 text-gray-700";
+  if (!grade) return "bg-gray-100 text-gray-600";
   if (grade.startsWith("MS-7") || grade.startsWith("PF-7"))
-    return "bg-emerald-100 text-emerald-800";
+    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
   if (grade.startsWith("MS-6") || grade.startsWith("PF-6"))
-    return "bg-blue-100 text-blue-800";
+    return "bg-blue-50 text-blue-700 border border-blue-200";
   if (grade.startsWith("AU") || grade.startsWith("EF"))
-    return "bg-amber-100 text-amber-800";
+    return "bg-amber-50 text-amber-700 border border-amber-200";
   if (grade.startsWith("VF") || grade.startsWith("F-"))
-    return "bg-orange-100 text-orange-800";
-  return "bg-gray-200 text-gray-700";
+    return "bg-orange-50 text-orange-700 border border-orange-200";
+  return "bg-gray-100 text-gray-600";
 }
 
 function getCertLink(certification: string | null, certNumber: string | null): string | null {
@@ -90,29 +92,29 @@ export default async function CoinDetailPage({ params }: PageProps) {
       />
 
       {/* Breadcrumb */}
-      <div className="border-b border-gray-200 bg-white">
-        <nav className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <ol className="flex items-center gap-2 text-sm text-gray-500">
+      <div className="border-b border-[var(--border)] bg-white">
+        <nav className="mx-auto max-w-7xl px-4 py-3.5 sm:px-6 lg:px-8">
+          <ol className="flex items-center gap-2 text-sm text-gray-400">
             <li>
-              <Link href="/" className="hover:text-[#C9A84C]">Home</Link>
+              <Link href="/" className="hover:text-[#C9A84C] transition-colors duration-300">Home</Link>
             </li>
-            <li>/</li>
+            <li className="text-gray-300">/</li>
             <li>
-              <Link href="/inventory" className="hover:text-[#C9A84C]">Inventory</Link>
+              <Link href="/inventory" className="hover:text-[#C9A84C] transition-colors duration-300">Inventory</Link>
             </li>
-            <li>/</li>
-            <li className="text-gray-900 font-medium truncate max-w-[200px]">
+            <li className="text-gray-300">/</li>
+            <li className="text-[#1B2A4A] font-medium truncate max-w-[200px]">
               {coin.title}
             </li>
           </ol>
         </nav>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-2">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-2">
           {/* Image Section */}
           <div>
-            <div className="relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+            <div className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--border)] bg-gray-50 shadow-sm">
               {images.length > 0 ? (
                 <Image
                   src={images[0]}
@@ -123,8 +125,8 @@ export default async function CoinDetailPage({ params }: PageProps) {
                   priority
                 />
               ) : (
-                <div className="flex h-full items-center justify-center">
-                  <span className="text-8xl">&#x1FA99;</span>
+                <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                  <span className="text-8xl text-gray-300">&#x1FA99;</span>
                 </div>
               )}
             </div>
@@ -135,7 +137,7 @@ export default async function CoinDetailPage({ params }: PageProps) {
                 {images.map((img, i) => (
                   <div
                     key={i}
-                    className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200"
+                    className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 border-[var(--border)] hover:border-[#C9A84C]/50 transition-all duration-300 cursor-pointer"
                   >
                     <Image
                       src={img}
@@ -152,18 +154,25 @@ export default async function CoinDetailPage({ params }: PageProps) {
 
           {/* Details Section */}
           <div>
-            <h1 className="font-serif text-2xl font-bold text-gray-900 md:text-3xl">
+            <h1 className="font-serif text-2xl font-bold text-[#1B2A4A] md:text-3xl leading-tight">
               {coin.title}
             </h1>
 
+            {/* Price - prominent */}
+            <div className="mt-5">
+              <p className="text-3xl font-bold text-[#C9A84C]">
+                {formatPrice(coin.askingPrice)}
+              </p>
+            </div>
+
             {/* Details Grid */}
-            <div className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="mt-8 grid grid-cols-2 gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface-alt)] p-5">
               {coin.year && (
                 <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <dt className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                     Year
                   </dt>
-                  <dd className="mt-1 text-sm font-medium text-gray-900">
+                  <dd className="mt-1.5 text-sm font-semibold text-[#1B2A4A]">
                     {coin.year}
                   </dd>
                 </div>
@@ -171,10 +180,10 @@ export default async function CoinDetailPage({ params }: PageProps) {
 
               {coin.mintMark && (
                 <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <dt className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                     Mint Mark
                   </dt>
-                  <dd className="mt-1 text-sm font-medium text-gray-900">
+                  <dd className="mt-1.5 text-sm font-semibold text-[#1B2A4A]">
                     {coin.mintMark}
                   </dd>
                 </div>
@@ -182,13 +191,13 @@ export default async function CoinDetailPage({ params }: PageProps) {
 
               {coin.grade && (
                 <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <dt className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                     Grade
                   </dt>
-                  <dd className="mt-1">
+                  <dd className="mt-1.5">
                     <span
                       className={cn(
-                        "inline-block rounded-full px-2.5 py-0.5 text-xs font-medium",
+                        "inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
                         getGradeBadgeColor(coin.grade)
                       )}
                     >
@@ -199,20 +208,20 @@ export default async function CoinDetailPage({ params }: PageProps) {
               )}
 
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <dt className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                   Category
                 </dt>
-                <dd className="mt-1 text-sm font-medium text-gray-900">
+                <dd className="mt-1.5 text-sm font-semibold text-[#1B2A4A]">
                   {coin.category}
                 </dd>
               </div>
 
               {coin.metal && (
                 <div>
-                  <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <dt className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                     Metal
                   </dt>
-                  <dd className="mt-1 text-sm font-medium text-gray-900">
+                  <dd className="mt-1.5 text-sm font-semibold text-[#1B2A4A]">
                     {coin.metal}
                   </dd>
                 </div>
@@ -221,19 +230,19 @@ export default async function CoinDetailPage({ params }: PageProps) {
 
             {/* Certification */}
             {coin.certification && coin.certification !== "Raw" && (
-              <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-                <dt className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              <div className="mt-4 rounded-xl border border-[var(--border)] bg-white p-5">
+                <dt className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
                   Certification
                 </dt>
-                <dd className="mt-1 flex items-center gap-2 text-sm font-medium text-gray-900">
+                <dd className="mt-1.5 flex items-center gap-2 text-sm font-semibold text-[#1B2A4A]">
                   {coin.certification}
-                  {coin.certNumber && <span>#{coin.certNumber}</span>}
+                  {coin.certNumber && <span className="text-gray-500">#{coin.certNumber}</span>}
                   {certLink && (
                     <a
                       href={certLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#C9A84C] underline hover:text-[#b8973f]"
+                      className="text-[#C9A84C] hover:text-[#B8942E] underline underline-offset-2 transition-colors duration-300"
                     >
                       Verify
                     </a>
@@ -244,34 +253,27 @@ export default async function CoinDetailPage({ params }: PageProps) {
 
             {/* Description */}
             {coin.description && (
-              <div className="mt-6">
-                <h2 className="font-serif text-lg font-semibold text-gray-900">
+              <div className="mt-8">
+                <h2 className="font-serif text-lg font-bold text-[#1B2A4A]">
                   Description
                 </h2>
-                <p className="mt-2 leading-relaxed text-gray-600">
+                <p className="mt-3 leading-relaxed text-gray-600">
                   {coin.description}
                 </p>
               </div>
             )}
 
-            {/* Price */}
-            <div className="mt-8">
-              <p className="text-3xl font-bold text-[#C9A84C]">
-                {formatPrice(coin.askingPrice)}
-              </p>
-            </div>
-
             {/* CTA */}
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={`/contact?subject=${encodeURIComponent(`Inquiry about ${coin.title}`)}`}
-                className="inline-flex items-center justify-center rounded-lg bg-[#1B2A4A] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#2a3d66]"
+                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-[#1B2A4A] to-[#243558] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-[#1B2A4A]/25 hover:-translate-y-0.5"
               >
                 Inquire About This Coin
               </Link>
               <Link
                 href="/inventory"
-                className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-7 py-3.5 text-sm font-medium text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:border-gray-300"
               >
                 &larr; Back to Inventory
               </Link>
@@ -281,39 +283,39 @@ export default async function CoinDetailPage({ params }: PageProps) {
 
         {/* Related Items */}
         {relatedCoins.length > 0 && (
-          <section className="mt-16">
-            <h2 className="font-serif text-2xl font-bold text-gray-900">
+          <section className="mt-20 pt-12 border-t border-[var(--border)]">
+            <h2 className="font-serif text-2xl font-bold text-[#1B2A4A]">
               Related Items
             </h2>
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {relatedCoins.map((related) => {
                 const relImages = parseJsonField<string[]>(related.images, []);
                 return (
                   <Link
                     key={related.id}
                     href={`/inventory/${related.slug}`}
-                    className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+                    className="group overflow-hidden rounded-xl border border-[var(--border)] bg-white transition-all duration-400 hover:shadow-xl hover:shadow-[#1B2A4A]/8 hover:-translate-y-1"
                   >
-                    <div className="relative aspect-square overflow-hidden bg-gray-100">
+                    <div className="relative aspect-square overflow-hidden bg-gray-50">
                       {relImages.length > 0 ? (
                         <Image
                           src={relImages[0]}
                           alt={related.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center">
-                          <span className="text-4xl">&#x1FA99;</span>
+                          <span className="text-4xl text-gray-300">&#x1FA99;</span>
                         </div>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-serif text-sm font-semibold text-gray-900 transition-colors group-hover:text-[#C9A84C]">
+                    <div className="p-5">
+                      <h3 className="font-serif text-sm font-bold text-[#1B2A4A] transition-colors duration-300 group-hover:text-[#C9A84C] line-clamp-2">
                         {related.title}
                       </h3>
-                      <p className="mt-1 text-lg font-bold text-[#C9A84C]">
+                      <p className="mt-2 text-lg font-bold text-[#C9A84C]">
                         {formatPrice(related.askingPrice)}
                       </p>
                     </div>

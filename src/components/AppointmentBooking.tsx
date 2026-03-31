@@ -15,6 +15,7 @@ import {
   isSameDay,
 } from "date-fns";
 import { FaChevronLeft, FaChevronRight, FaSpinner, FaCheckCircle } from "react-icons/fa";
+import { cn } from "@/lib/utils";
 
 interface Slot {
   time: string;
@@ -61,7 +62,6 @@ export default function AppointmentBooking() {
 
   const maxDate = addDays(today, advanceBookDays);
 
-  // Fetch availability for a full month
   const fetchMonthAvailability = useCallback(async (month: Date) => {
     setLoadingMonth(true);
     const days = eachDayOfInterval({
@@ -71,7 +71,6 @@ export default function AppointmentBooking() {
 
     const availability: MonthAvailability = {};
 
-    // Fetch each day's availability in parallel (batched)
     const promises = days.map(async (day) => {
       if (isBefore(day, today) || isBefore(maxDate, day)) {
         return;
@@ -101,11 +100,9 @@ export default function AppointmentBooking() {
 
   useEffect(() => {
     fetchMonthAvailability(currentMonth);
-    // We intentionally only re-fetch when currentMonth changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMonth]);
 
-  // Fetch settings for advanceBookDays
   useEffect(() => {
     async function fetchSettings() {
       try {
@@ -219,18 +216,21 @@ export default function AppointmentBooking() {
 
   const canGoPrev = !isBefore(startOfMonth(subMonths(currentMonth, 1)), startOfMonth(today));
 
+  const inputClasses = "w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-[#1B2A4A] focus:border-[#C9A84C] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)] outline-none transition-all duration-300";
+
   return (
     <div>
       {/* Step indicators */}
-      <div className="flex items-center justify-center gap-2 mb-8">
+      <div className="flex items-center justify-center gap-2 mb-10">
         {[1, 2, 3, 4].map((s) => (
           <div key={s} className="flex items-center">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+              className={cn(
+                "w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300",
                 step >= s
-                  ? "bg-[#C9A84C] text-white"
-                  : "bg-gray-200 text-gray-500"
-              }`}
+                  ? "bg-gradient-to-br from-[#C9A84C] to-[#B8942E] text-white shadow-md shadow-[#C9A84C]/20"
+                  : "bg-gray-100 text-gray-400"
+              )}
             >
               {s === 4 && step === 4 ? (
                 <FaCheckCircle className="text-sm" />
@@ -240,9 +240,10 @@ export default function AppointmentBooking() {
             </div>
             {s < 4 && (
               <div
-                className={`w-12 h-0.5 ${
-                  step > s ? "bg-[#C9A84C]" : "bg-gray-200"
-                }`}
+                className={cn(
+                  "w-14 h-[2px] transition-colors duration-300",
+                  step > s ? "bg-[#C9A84C]" : "bg-gray-100"
+                )}
               />
             )}
           </div>
@@ -251,37 +252,37 @@ export default function AppointmentBooking() {
 
       {/* Step 1: Calendar */}
       {step === 1 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="font-serif text-xl font-bold text-[#1B2A4A] mb-4 text-center">
+        <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-7">
+          <h2 className="font-serif text-xl font-bold text-[#1B2A4A] mb-5 text-center">
             Select a Date
           </h2>
 
           {/* Month navigation */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-5">
             <button
               onClick={() => canGoPrev && setCurrentMonth(subMonths(currentMonth, 1))}
               disabled={!canGoPrev}
-              className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
             >
               <FaChevronLeft className="text-[#1B2A4A]" />
             </button>
-            <h3 className="font-semibold text-[#1B2A4A] text-lg">
+            <h3 className="font-serif font-bold text-[#1B2A4A] text-lg">
               {format(currentMonth, "MMMM yyyy")}
             </h3>
             <button
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2.5 rounded-lg hover:bg-gray-100 transition-all duration-200"
             >
               <FaChevronRight className="text-[#1B2A4A]" />
             </button>
           </div>
 
           {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-1">
+          <div className="grid grid-cols-7 gap-1 mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
               <div
                 key={d}
-                className="text-center text-xs font-semibold text-gray-400 py-2"
+                className="text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider py-2"
               >
                 {d}
               </div>
@@ -291,11 +292,10 @@ export default function AppointmentBooking() {
           {/* Calendar grid */}
           <div className="grid grid-cols-7 gap-1 relative">
             {loadingMonth && (
-              <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-10 rounded-lg">
+              <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-lg backdrop-blur-sm">
                 <FaSpinner className="animate-spin text-[#C9A84C] text-2xl" />
               </div>
             )}
-            {/* Empty cells for offset */}
             {Array.from({ length: startDayOfWeek }).map((_, i) => (
               <div key={`empty-${i}`} className="aspect-square" />
             ))}
@@ -316,13 +316,15 @@ export default function AppointmentBooking() {
                   key={dateStr}
                   onClick={() => !isDisabled && handleDateClick(day)}
                   disabled={isDisabled}
-                  className={`aspect-square rounded-lg flex flex-col items-center justify-center text-sm transition-all relative ${
+                  className={cn(
+                    "aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-all duration-300 relative",
                     isSelected
-                      ? "bg-[#C9A84C] text-white font-bold shadow-md"
+                      ? "bg-gradient-to-br from-[#C9A84C] to-[#B8942E] text-white font-bold shadow-lg shadow-[#C9A84C]/20"
                       : isDisabled
                       ? "text-gray-300 cursor-not-allowed"
-                      : "hover:bg-[#C9A84C]/10 text-[#1B2A4A] font-medium cursor-pointer"
-                  } ${isToday && !isSelected ? "ring-2 ring-[#C9A84C] ring-inset" : ""}`}
+                      : "hover:bg-[#C9A84C]/10 text-[#1B2A4A] font-medium cursor-pointer",
+                    isToday && !isSelected ? "ring-2 ring-[#C9A84C] ring-inset" : ""
+                  )}
                 >
                   <span>{format(day, "d")}</span>
                   {isClosed && !isPast && !isBeyondMax && (
@@ -331,7 +333,7 @@ export default function AppointmentBooking() {
                     </span>
                   )}
                   {isFull && !isClosed && !isPast && !isBeyondMax && (
-                    <span className="text-[9px] text-red-400 leading-none mt-0.5 font-semibold">
+                    <span className="text-[9px] text-red-400 leading-none mt-0.5 font-bold">
                       Full
                     </span>
                   )}
@@ -344,36 +346,36 @@ export default function AppointmentBooking() {
 
       {/* Step 2: Time & Type Selection */}
       {step === 2 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-7">
           <button
             onClick={() => setStep(1)}
-            className="text-sm text-[#C9A84C] hover:underline mb-4 inline-block"
+            className="text-sm text-[#C9A84C] hover:text-[#B8942E] font-semibold mb-5 inline-flex items-center gap-1.5 transition-colors duration-300"
           >
-            &larr; Back to calendar
+            <span>&larr;</span> Back to calendar
           </button>
 
           <h2 className="font-serif text-xl font-bold text-[#1B2A4A] mb-1">
             Select Time & Type
           </h2>
           {selectedDate && (
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-400 mb-7 text-sm">
               {format(selectedDate, "EEEE, MMMM d, yyyy")}
             </p>
           )}
 
           {loadingSlots ? (
-            <div className="flex justify-center py-12">
+            <div className="flex justify-center py-14">
               <FaSpinner className="animate-spin text-[#C9A84C] text-2xl" />
             </div>
           ) : (
             <>
               {/* Time Slots */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-[#1B2A4A] mb-3">
+              <div className="mb-7">
+                <label className="block text-sm font-bold text-[#1B2A4A] mb-3">
                   Available Times
                 </label>
                 {slots.length === 0 ? (
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm bg-gray-50 rounded-lg p-4 text-center">
                     No time slots available for this date.
                   </p>
                 ) : (
@@ -386,13 +388,14 @@ export default function AppointmentBooking() {
                           key={slot.time}
                           onClick={() => isAvailable && handleSlotSelect(slot.time)}
                           disabled={!isAvailable}
-                          className={`py-3 px-3 rounded-lg text-sm font-medium transition-all border ${
+                          className={cn(
+                            "py-3 px-3 rounded-lg text-sm font-medium transition-all duration-300 border",
                             isSelected
-                              ? "bg-[#C9A84C] text-white border-[#C9A84C] shadow-md"
+                              ? "bg-gradient-to-br from-[#C9A84C] to-[#B8942E] text-white border-[#C9A84C] shadow-md shadow-[#C9A84C]/20"
                               : isAvailable
-                              ? "border-gray-200 text-[#1B2A4A] hover:border-[#C9A84C] hover:bg-[#C9A84C]/5"
+                              ? "border-gray-200 text-[#1B2A4A] hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/5"
                               : "border-gray-100 text-gray-300 cursor-not-allowed bg-gray-50"
-                          }`}
+                          )}
                         >
                           {slot.time}
                         </button>
@@ -403,8 +406,8 @@ export default function AppointmentBooking() {
               </div>
 
               {/* Appointment Type */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-[#1B2A4A] mb-3">
+              <div className="mb-7">
+                <label className="block text-sm font-bold text-[#1B2A4A] mb-3">
                   Appointment Type
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -412,11 +415,12 @@ export default function AppointmentBooking() {
                     <button
                       key={type}
                       onClick={() => setSelectedType(type)}
-                      className={`py-3 px-4 rounded-lg text-sm font-medium transition-all border text-left ${
+                      className={cn(
+                        "py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 border text-left",
                         selectedType === type
-                          ? "bg-[#C9A84C] text-white border-[#C9A84C] shadow-md"
-                          : "border-gray-200 text-[#1B2A4A] hover:border-[#C9A84C] hover:bg-[#C9A84C]/5"
-                      }`}
+                          ? "bg-gradient-to-br from-[#C9A84C] to-[#B8942E] text-white border-[#C9A84C] shadow-md shadow-[#C9A84C]/20"
+                          : "border-gray-200 text-[#1B2A4A] hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/5"
+                      )}
                     >
                       {type}
                     </button>
@@ -427,7 +431,7 @@ export default function AppointmentBooking() {
               <button
                 onClick={handleContinueToForm}
                 disabled={!selectedSlot || !selectedType}
-                className="w-full py-3 rounded-lg bg-[#C9A84C] hover:bg-[#b8963e] text-white font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                className="w-full py-3.5 rounded-lg bg-gradient-to-r from-[#C9A84C] to-[#B8942E] text-white font-semibold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:shadow-lg hover:shadow-[#C9A84C]/25 hover:-translate-y-0.5 disabled:hover:translate-y-0"
               >
                 Continue
               </button>
@@ -438,80 +442,80 @@ export default function AppointmentBooking() {
 
       {/* Step 3: Contact Info */}
       {step === 3 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-7">
           <button
             onClick={() => setStep(2)}
-            className="text-sm text-[#C9A84C] hover:underline mb-4 inline-block"
+            className="text-sm text-[#C9A84C] hover:text-[#B8942E] font-semibold mb-5 inline-flex items-center gap-1.5 transition-colors duration-300"
           >
-            &larr; Back to time selection
+            <span>&larr;</span> Back to time selection
           </button>
 
           <h2 className="font-serif text-xl font-bold text-[#1B2A4A] mb-1">
             Your Information
           </h2>
-          <p className="text-gray-500 mb-6 text-sm">
+          <p className="text-gray-400 mb-7 text-sm">
             {selectedDate && format(selectedDate, "EEEE, MMMM d, yyyy")} &middot;{" "}
             {selectedSlot} &middot; {selectedType}
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-[#1B2A4A] mb-1">
-                Full Name <span className="text-red-500">*</span>
+              <label className="block text-sm font-bold text-[#1B2A4A] mb-1.5">
+                Full Name <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] outline-none transition-colors"
+                className={inputClasses}
                 placeholder="John Smith"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#1B2A4A] mb-1">
-                Email <span className="text-red-500">*</span>
+              <label className="block text-sm font-bold text-[#1B2A4A] mb-1.5">
+                Email <span className="text-red-400">*</span>
               </label>
               <input
                 type="email"
                 required
                 value={formEmail}
                 onChange={(e) => setFormEmail(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] outline-none transition-colors"
+                className={inputClasses}
                 placeholder="john@example.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#1B2A4A] mb-1">
-                Phone <span className="text-red-500">*</span>
+              <label className="block text-sm font-bold text-[#1B2A4A] mb-1.5">
+                Phone <span className="text-red-400">*</span>
               </label>
               <input
                 type="tel"
                 required
                 value={formPhone}
                 onChange={(e) => setFormPhone(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] outline-none transition-colors"
+                className={inputClasses}
                 placeholder="(555) 555-5555"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#1B2A4A] mb-1">
-                Notes <span className="text-gray-400 font-normal">(optional)</span>
+              <label className="block text-sm font-bold text-[#1B2A4A] mb-1.5">
+                Notes <span className="text-gray-400 font-normal text-xs">(optional)</span>
               </label>
               <textarea
                 value={formNotes}
                 onChange={(e) => setFormNotes(e.target.value)}
                 rows={3}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] outline-none transition-colors resize-none"
+                className={cn(inputClasses, "resize-none")}
                 placeholder="Tell us what you'd like to discuss or any items you're bringing in..."
               />
             </div>
 
             {submitError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
                 {submitError}
               </div>
             )}
@@ -519,7 +523,7 @@ export default function AppointmentBooking() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-lg bg-[#C9A84C] hover:bg-[#b8963e] text-white font-semibold transition-all disabled:opacity-60 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-lg bg-gradient-to-r from-[#C9A84C] to-[#B8942E] text-white font-semibold transition-all duration-300 disabled:opacity-60 shadow-sm hover:shadow-lg hover:shadow-[#C9A84C]/25 hover:-translate-y-0.5 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
@@ -536,43 +540,43 @@ export default function AppointmentBooking() {
 
       {/* Step 4: Confirmation */}
       {step === 4 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-[var(--border)] p-10 text-center">
+          <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5">
             <FaCheckCircle className="text-green-500 text-3xl" />
           </div>
 
           <h2 className="font-serif text-2xl font-bold text-[#1B2A4A] mb-2">
             Appointment Booked!
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-400 mb-8">
             Your appointment has been submitted successfully.
           </p>
 
-          <div className="bg-gray-50 rounded-lg p-5 mb-6 inline-block text-left mx-auto">
-            <div className="space-y-2 text-sm">
-              <div>
-                <span className="font-semibold text-[#1B2A4A]">Date:</span>{" "}
-                <span className="text-gray-700">{confirmedDate}</span>
+          <div className="bg-[var(--surface-alt)] rounded-xl p-6 mb-8 inline-block text-left mx-auto border border-[var(--border)]">
+            <div className="space-y-3 text-sm">
+              <div className="flex gap-3">
+                <span className="font-bold text-[#1B2A4A] w-12">Date:</span>
+                <span className="text-gray-600">{confirmedDate}</span>
               </div>
-              <div>
-                <span className="font-semibold text-[#1B2A4A]">Time:</span>{" "}
-                <span className="text-gray-700">{confirmedSlot}</span>
+              <div className="flex gap-3">
+                <span className="font-bold text-[#1B2A4A] w-12">Time:</span>
+                <span className="text-gray-600">{confirmedSlot}</span>
               </div>
-              <div>
-                <span className="font-semibold text-[#1B2A4A]">Type:</span>{" "}
-                <span className="text-gray-700">{confirmedType}</span>
+              <div className="flex gap-3">
+                <span className="font-bold text-[#1B2A4A] w-12">Type:</span>
+                <span className="text-gray-600">{confirmedType}</span>
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-gray-400 mb-8">
             We&apos;ll give you a call to confirm your appointment. If you need
             to make changes, please contact us directly.
           </p>
 
           <button
             onClick={handleBookAnother}
-            className="px-6 py-3 rounded-lg border-2 border-[#C9A84C] text-[#C9A84C] font-semibold hover:bg-[#C9A84C] hover:text-white transition-all"
+            className="px-8 py-3.5 rounded-lg border-2 border-[#C9A84C] text-[#C9A84C] font-semibold hover:bg-[#C9A84C] hover:text-white transition-all duration-300 hover:-translate-y-0.5"
           >
             Book Another Appointment
           </button>

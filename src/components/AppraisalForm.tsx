@@ -87,26 +87,30 @@ export default function AppraisalForm() {
   const inputClasses = cn(
     "w-full px-4 py-3 rounded-lg border",
     "bg-white",
-    "border-gray-300",
-    "text-gray-900",
-    "placeholder-gray-500",
-    "focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent",
-    "transition-colors"
+    "border-gray-200",
+    "text-[#1B2A4A]",
+    "placeholder-gray-400",
+    "focus:outline-none focus:border-[#C9A84C] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)]",
+    "transition-all duration-300"
   );
+
+  const labelClasses = "block text-sm font-semibold text-[#1B2A4A] mb-1.5";
 
   if (status === "success") {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
-        <div className="text-5xl mb-4">&#10003;</div>
+      <div className="bg-green-50 border border-green-200 rounded-2xl p-10 text-center">
+        <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-green-600 text-2xl">&#10003;</span>
+        </div>
         <h3 className="text-xl font-serif font-bold text-green-800 mb-2">
           Appraisal Request Submitted!
         </h3>
-        <p className="text-green-700 mb-4">
+        <p className="text-green-700 mb-6">
           Thank you! We&apos;ll review your submission and get back to you within 1-2 business days.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="text-[#C9A84C] hover:underline font-semibold"
+          className="text-[#C9A84C] hover:text-[#B8942E] font-semibold transition-colors duration-300"
         >
           Submit another request
         </button>
@@ -115,14 +119,11 @@ export default function AppraisalForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label
-            htmlFor="appraisal-name"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Name <span className="text-red-500">*</span>
+          <label htmlFor="appraisal-name" className={labelClasses}>
+            Name <span className="text-red-400">*</span>
           </label>
           <input
             id="appraisal-name"
@@ -136,11 +137,8 @@ export default function AppraisalForm() {
           />
         </div>
         <div>
-          <label
-            htmlFor="appraisal-email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email <span className="text-red-500">*</span>
+          <label htmlFor="appraisal-email" className={labelClasses}>
+            Email <span className="text-red-400">*</span>
           </label>
           <input
             id="appraisal-email"
@@ -156,10 +154,7 @@ export default function AppraisalForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="appraisal-phone"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
+        <label htmlFor="appraisal-phone" className={labelClasses}>
           Phone
         </label>
         <input
@@ -174,11 +169,8 @@ export default function AppraisalForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="appraisal-description"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Description <span className="text-red-500">*</span>
+        <label htmlFor="appraisal-description" className={labelClasses}>
+          Description <span className="text-red-400">*</span>
         </label>
         <textarea
           id="appraisal-description"
@@ -188,28 +180,35 @@ export default function AppraisalForm() {
           placeholder="Describe the item(s) you'd like appraised. Include any known details such as year, mint mark, condition, quantity, etc."
           value={formData.description}
           onChange={handleChange}
-          className={inputClasses}
+          className={cn(inputClasses, "resize-none")}
         />
       </div>
 
       {/* Photo Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Photos (up to 5)
+        <label className={labelClasses}>
+          Photos <span className="text-gray-400 font-normal">(up to 5)</span>
         </label>
         <div
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer",
-            "border-gray-300",
-            "hover:border-[#C9A84C]",
-            "transition-colors"
+            "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer",
+            "border-gray-200 bg-gray-50/50",
+            "hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/[0.02]",
+            "transition-all duration-300"
           )}
         >
-          <div className="text-3xl mb-2">&#128247;</div>
-          <p className="text-gray-600 text-sm">
-            Click to upload images &middot; {5 - images.length} remaining
-          </p>
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 bg-[#C9A84C]/10 rounded-full flex items-center justify-center mb-3">
+              <span className="text-[#C9A84C] text-xl">&#128247;</span>
+            </div>
+            <p className="text-gray-600 text-sm font-medium mb-1">
+              Click to upload images
+            </p>
+            <p className="text-gray-400 text-xs">
+              {5 - images.length} {5 - images.length === 1 ? "slot" : "slots"} remaining
+            </p>
+          </div>
           <input
             ref={fileInputRef}
             type="file"
@@ -220,21 +219,22 @@ export default function AppraisalForm() {
           />
         </div>
         {previews.length > 0 && (
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-3">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-4">
             {previews.map((preview, index) => (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group rounded-lg overflow-hidden">
                 <img
                   src={preview}
                   alt={`Upload ${index + 1}`}
-                  className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                  className="w-full h-24 object-cover border border-gray-200 rounded-lg"
                 />
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
                   className={cn(
-                    "absolute -top-2 -right-2 w-6 h-6 rounded-full",
+                    "absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full",
                     "bg-red-500 text-white text-xs flex items-center justify-center",
-                    "opacity-0 group-hover:opacity-100 transition-opacity"
+                    "opacity-0 group-hover:opacity-100 transition-all duration-200",
+                    "shadow-lg hover:bg-red-600 hover:scale-110"
                   )}
                 >
                   &times;
@@ -247,11 +247,16 @@ export default function AppraisalForm() {
 
       {/* Preferred Contact Method */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className={labelClasses}>
           Preferred Contact Method
         </label>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 cursor-pointer">
+        <div className="flex gap-4 mt-1">
+          <label className={cn(
+            "flex items-center gap-2.5 cursor-pointer px-4 py-2.5 rounded-lg border transition-all duration-300",
+            formData.contactMethod === "email"
+              ? "border-[#C9A84C] bg-[#C9A84C]/5 text-[#1B2A4A]"
+              : "border-gray-200 text-gray-600 hover:border-gray-300"
+          )}>
             <input
               type="radio"
               name="contactMethod"
@@ -260,9 +265,14 @@ export default function AppraisalForm() {
               onChange={handleChange}
               className="text-[#C9A84C] focus:ring-[#C9A84C]"
             />
-            <span className="text-gray-700">Email</span>
+            <span className="text-sm font-medium">Email</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className={cn(
+            "flex items-center gap-2.5 cursor-pointer px-4 py-2.5 rounded-lg border transition-all duration-300",
+            formData.contactMethod === "phone"
+              ? "border-[#C9A84C] bg-[#C9A84C]/5 text-[#1B2A4A]"
+              : "border-gray-200 text-gray-600 hover:border-gray-300"
+          )}>
             <input
               type="radio"
               name="contactMethod"
@@ -271,14 +281,14 @@ export default function AppraisalForm() {
               onChange={handleChange}
               className="text-[#C9A84C] focus:ring-[#C9A84C]"
             />
-            <span className="text-gray-700">Phone</span>
+            <span className="text-sm font-medium">Phone</span>
           </label>
         </div>
       </div>
 
       {status === "error" && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700 text-sm">{errorMessage}</p>
+          <p className="text-red-600 text-sm">{errorMessage}</p>
         </div>
       )}
 
@@ -286,9 +296,10 @@ export default function AppraisalForm() {
         type="submit"
         disabled={status === "loading"}
         className={cn(
-          "w-full px-6 py-3 rounded-lg font-semibold text-white transition-colors",
-          "bg-[#1B2A4A] hover:bg-[#2a3d66]",
-          "disabled:opacity-50 disabled:cursor-not-allowed"
+          "w-full px-6 py-3.5 rounded-lg font-semibold text-white transition-all duration-300",
+          "bg-gradient-to-r from-[#1B2A4A] to-[#243558]",
+          "hover:shadow-lg hover:shadow-[#1B2A4A]/25 hover:-translate-y-0.5",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         )}
       >
         {status === "loading" ? "Submitting..." : "Submit Appraisal Request"}

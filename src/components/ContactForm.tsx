@@ -57,26 +57,30 @@ export default function ContactForm() {
   const inputClasses = cn(
     "w-full px-4 py-3 rounded-lg border",
     "bg-white",
-    "border-gray-300",
-    "text-gray-900",
-    "placeholder-gray-500",
-    "focus:outline-none focus:ring-2 focus:ring-[#C9A84C] focus:border-transparent",
-    "transition-colors"
+    "border-gray-200",
+    "text-[#1B2A4A]",
+    "placeholder-gray-400",
+    "focus:outline-none focus:border-[#C9A84C] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.1)]",
+    "transition-all duration-300"
   );
+
+  const labelClasses = "block text-sm font-semibold text-[#1B2A4A] mb-1.5";
 
   if (status === "success") {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
-        <div className="text-4xl mb-4">&#10003;</div>
+      <div className="bg-green-50 border border-green-200 rounded-2xl p-10 text-center">
+        <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-green-600 text-2xl">&#10003;</span>
+        </div>
         <h3 className="text-xl font-serif font-bold text-green-800 mb-2">
           Message Sent!
         </h3>
-        <p className="text-green-700">
+        <p className="text-green-700 mb-6">
           Thank you for reaching out. We&apos;ll get back to you as soon as possible.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="mt-4 text-[#C9A84C] hover:underline font-semibold"
+          className="text-[#C9A84C] hover:text-[#B8942E] font-semibold transition-colors duration-300"
         >
           Send another message
         </button>
@@ -88,11 +92,8 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label
-            htmlFor="contact-name"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Name <span className="text-red-500">*</span>
+          <label htmlFor="contact-name" className={labelClasses}>
+            Name <span className="text-red-400">*</span>
           </label>
           <input
             id="contact-name"
@@ -106,11 +107,8 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label
-            htmlFor="contact-email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email <span className="text-red-500">*</span>
+          <label htmlFor="contact-email" className={labelClasses}>
+            Email <span className="text-red-400">*</span>
           </label>
           <input
             id="contact-email"
@@ -127,10 +125,7 @@ export default function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label
-            htmlFor="contact-phone"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="contact-phone" className={labelClasses}>
             Phone
           </label>
           <input
@@ -144,11 +139,8 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label
-            htmlFor="contact-subject"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Subject <span className="text-red-500">*</span>
+          <label htmlFor="contact-subject" className={labelClasses}>
+            Subject <span className="text-red-400">*</span>
           </label>
           <select
             id="contact-subject"
@@ -169,11 +161,8 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="contact-message"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Message <span className="text-red-500">*</span>
+        <label htmlFor="contact-message" className={labelClasses}>
+          Message <span className="text-red-400">*</span>
         </label>
         <textarea
           id="contact-message"
@@ -183,13 +172,13 @@ export default function ContactForm() {
           placeholder="How can we help you?"
           value={formData.message}
           onChange={handleChange}
-          className={inputClasses}
+          className={cn(inputClasses, "resize-none")}
         />
       </div>
 
       {status === "error" && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700 text-sm">{errorMessage}</p>
+          <p className="text-red-600 text-sm">{errorMessage}</p>
         </div>
       )}
 
@@ -197,9 +186,10 @@ export default function ContactForm() {
         type="submit"
         disabled={status === "loading"}
         className={cn(
-          "w-full px-6 py-3 rounded-lg font-semibold text-white transition-colors",
-          "bg-[#1B2A4A] hover:bg-[#2a3d66]",
-          "disabled:opacity-50 disabled:cursor-not-allowed"
+          "w-full px-6 py-3.5 rounded-lg font-semibold text-white transition-all duration-300",
+          "bg-gradient-to-r from-[#1B2A4A] to-[#243558]",
+          "hover:shadow-lg hover:shadow-[#1B2A4A]/25 hover:-translate-y-0.5",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         )}
       >
         {status === "loading" ? "Sending..." : "Send Message"}

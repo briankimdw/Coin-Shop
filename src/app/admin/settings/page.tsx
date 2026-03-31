@@ -110,22 +110,22 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
+    <div className="bg-white border border-gray-200/80 rounded-xl overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+        className="w-full px-5 py-3.5 flex items-center justify-between hover:bg-gray-50/50 transition-colors"
       >
-        <span className="font-semibold text-gray-900">
+        <span className="font-semibold text-sm text-[#1B2A4A]">
           {title}
         </span>
         {open ? (
-          <HiChevronDown className="text-gray-500" />
+          <HiChevronDown className="text-gray-400" />
         ) : (
-          <HiChevronRight className="text-gray-500" />
+          <HiChevronRight className="text-gray-400" />
         )}
       </button>
-      {open && <div className="p-4 space-y-4">{children}</div>}
+      {open && <div className="px-5 pb-5 pt-2 space-y-4 border-t border-gray-100">{children}</div>}
     </div>
   );
 }
@@ -285,12 +285,15 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Store Settings
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#1B2A4A]">
+          Store Settings
+        </h1>
+        <p className="text-sm text-gray-400 mt-0.5">Configure your shop details and preferences</p>
+      </div>
 
       {success && (
-        <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+        <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium">
           Settings saved successfully!
         </div>
       )}

@@ -4,6 +4,8 @@ import "./globals.css";
 import { LayoutShell } from "@/components/layout/LayoutShell";
 import prisma from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",

@@ -169,21 +169,24 @@ export default function SpotPricesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Spot Prices
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#1B2A4A]">
+          Spot Prices
+        </h1>
+        <p className="text-sm text-gray-400 mt-0.5">Configure metal pricing and premiums</p>
+      </div>
 
       {success && (
-        <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+        <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-medium">
           Spot price settings saved successfully!
         </div>
       )}
 
       {/* Current Live Prices */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div className="bg-white rounded-xl border border-gray-100 p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
           <FaChartLine className="text-[#C9A84C]" />
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] uppercase tracking-wide">
             Current Live Prices
           </h2>
         </div>
@@ -211,7 +214,7 @@ export default function SpotPricesPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
         {/* Auto-fetch toggle */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -241,8 +244,8 @@ export default function SpotPricesPage() {
         </div>
 
         {/* Manual Overrides */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-4 uppercase tracking-wide">
             Manual Overrides
           </h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -277,8 +280,8 @@ export default function SpotPricesPage() {
         </div>
 
         {/* Premiums */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-4 uppercase tracking-wide">
             Premiums
           </h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -339,24 +342,24 @@ export default function SpotPricesPage() {
         </div>
 
         {/* Preview Table */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
+          <h2 className="text-sm font-semibold text-[#1B2A4A] mb-4 uppercase tracking-wide">
             Price Preview
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
+                <tr className="bg-gray-50/80 border-b border-gray-200">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Metal
                   </th>
-                  <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Spot Price
                   </th>
-                  <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     We Buy At
                   </th>
-                  <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     We Sell At
                   </th>
                 </tr>

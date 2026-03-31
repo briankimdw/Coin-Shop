@@ -30,19 +30,19 @@ export default function BlogCard({ post }: BlogCardProps) {
   }
 
   return (
-    <article className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <article className="group overflow-hidden rounded-xl border border-[var(--border)] bg-white transition-all duration-400 hover:shadow-xl hover:shadow-[#1B2A4A]/8 hover:-translate-y-1">
       {/* Cover Image */}
-      <Link href={`/blog/${post.slug}`} className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
+      <Link href={`/blog/${post.slug}`} className="relative block aspect-[16/9] overflow-hidden bg-gray-50">
         {post.coverImage ? (
           <Image
             src={post.coverImage}
             alt={post.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
             <svg
               className="h-12 w-12 text-gray-300"
               fill="none"
@@ -58,36 +58,38 @@ export default function BlogCard({ post }: BlogCardProps) {
             </svg>
           </div>
         )}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
       </Link>
 
       {/* Content */}
-      <div className="p-5">
-        <div className="mb-2 flex items-center gap-2 text-xs text-gray-500">
+      <div className="p-6">
+        <div className="mb-3 flex items-center gap-2 text-xs text-gray-400">
           <time dateTime={date.toISOString()}>
             {format(date, "MMMM d, yyyy")}
           </time>
-          <span>&middot;</span>
-          <span>{post.author}</span>
+          <span className="w-1 h-1 rounded-full bg-gray-300" />
+          <span className="font-medium text-gray-500">{post.author}</span>
         </div>
 
         <Link href={`/blog/${post.slug}`}>
-          <h3 className="font-serif text-lg font-bold leading-tight text-gray-900 transition-colors hover:text-[#C9A84C]">
+          <h3 className="font-serif text-lg font-bold leading-snug text-[#1B2A4A] transition-colors duration-300 hover:text-[#C9A84C]">
             {post.title}
           </h3>
         </Link>
 
         {post.excerpt && (
-          <p className="mt-2 text-sm leading-relaxed text-gray-600">
+          <p className="mt-3 text-sm leading-relaxed text-gray-500">
             {truncate(post.excerpt, 150)}
           </p>
         )}
 
         {tags.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          <div className="mt-4 flex flex-wrap gap-1.5">
             {tags.map((tag: string) => (
               <span
                 key={tag}
-                className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                className="rounded-full bg-[#1B2A4A]/5 px-2.5 py-0.5 text-[11px] font-medium text-[#1B2A4A]/70 border border-[#1B2A4A]/10"
               >
                 {tag}
               </span>
@@ -97,9 +99,9 @@ export default function BlogCard({ post }: BlogCardProps) {
 
         <Link
           href={`/blog/${post.slug}`}
-          className="mt-4 inline-block text-sm font-medium text-[#C9A84C] transition-colors hover:text-[#b8973f]"
+          className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[#C9A84C] transition-colors duration-300 hover:text-[#B8942E]"
         >
-          Read more &rarr;
+          Read more <span>&rarr;</span>
         </Link>
       </div>
     </article>

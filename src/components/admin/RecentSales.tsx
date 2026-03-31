@@ -53,17 +53,17 @@ export default function RecentSales({ sales }: RecentSalesProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       {sales.map((sale) => {
         const images = parseImages(sale.coinListing.images);
         return (
           <Link
             key={sale.id}
             href={`/admin/inventory/${sale.coinListingId}/edit`}
-            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+            className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50/80 transition-all group"
           >
             {/* Thumbnail */}
-            <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center">
               {images[0] ? (
                 <img
                   src={images[0]}
@@ -71,20 +71,20 @@ export default function RecentSales({ sales }: RecentSalesProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-lg">🪙</span>
+                <span className="text-base">🪙</span>
               )}
             </div>
 
             {/* Details */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate group-hover:text-[#C9A84C] transition-colors">
+              <p className="text-sm font-medium text-gray-800 truncate group-hover:text-[#C9A84C] transition-colors">
                 {sale.coinListing.title}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="inline-flex px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-medium text-gray-500">
+                <span className="inline-flex px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-medium text-gray-400">
                   {sale.coinListing.category}
                 </span>
-                <span className="text-[10px] text-gray-400">
+                <span className="text-[10px] text-gray-300">
                   {getRelativeTime(sale.soldAt)}
                 </span>
               </div>
@@ -92,7 +92,7 @@ export default function RecentSales({ sales }: RecentSalesProps) {
 
             {/* Price */}
             <div className="text-right flex-shrink-0">
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-sm font-bold text-[#1B2A4A]">
                 {formatPrice(sale.salePrice)}
               </p>
             </div>

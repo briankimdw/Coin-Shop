@@ -15,6 +15,9 @@ import {
   GiBookshelf,
   GiReceiveMoney,
 } from "react-icons/gi";
+import { FaShieldAlt, FaAward, FaHandshake, FaStar } from "react-icons/fa";
+
+export const dynamic = 'force-dynamic';
 
 async function getSettings() {
   return prisma.storeSettings.upsert({
@@ -65,6 +68,13 @@ const services = [
   },
 ];
 
+const trustBadges = [
+  { icon: FaShieldAlt, label: "Trusted Dealer" },
+  { icon: FaAward, label: "ANA Member" },
+  { icon: FaHandshake, label: "Fair Prices" },
+  { icon: FaStar, label: "5-Star Rated" },
+];
+
 export default async function HomePage() {
   const [settings, testimonials] = await Promise.all([
     getSettings(),
@@ -96,97 +106,143 @@ export default async function HomePage() {
       />
 
       {/* ====== HERO SECTION ====== */}
-      <section className="relative bg-[#1B2A4A] min-h-[500px] md:min-h-[600px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1B2A4A] via-[#1B2A4A]/90 to-transparent" />
+      <section className="relative min-h-[560px] md:min-h-[640px] flex items-center overflow-hidden">
+        {/* Background with gradient mesh */}
+        <div className="absolute inset-0 bg-[#1B2A4A]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1B2A4A] via-[#243558] to-[#1B2A4A]" />
+        {/* Subtle radial accents */}
+        <div className="absolute inset-0 opacity-100">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#C9A84C]/[0.04] rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#C9A84C]/[0.03] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
+        </div>
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(201,168,76,0.5) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 w-full">
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight max-w-3xl">
-            {settings.heroTitle || "Buy, Sell & Trade Coins & Precious Metals"}
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl">
-            {settings.heroSubtitle || settings.tagline}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href="/inventory"
-              className={cn(
-                "inline-flex items-center justify-center px-8 py-4 rounded-lg",
-                "bg-[#C9A84C] hover:bg-[#b8963f] text-white font-semibold text-lg",
-                "transition-colors shadow-lg"
-              )}
-            >
-              Browse Inventory
-            </Link>
-            <Link
-              href="/appraisal"
-              className={cn(
-                "inline-flex items-center justify-center px-8 py-4 rounded-lg",
-                "border-2 border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white",
-                "font-semibold text-lg transition-colors"
-              )}
-            >
-              Get a Free Appraisal
-            </Link>
+          <div className="max-w-3xl">
+            {/* Small label */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/20 px-4 py-1.5 mb-6">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#C9A84C] animate-pulse" />
+              <span className="text-[#C9A84C] text-xs font-semibold tracking-wider uppercase">
+                Trusted Since {settings.yearsInBusiness ? `${new Date().getFullYear() - Number(settings.yearsInBusiness)}` : "2000"}
+              </span>
+            </div>
+
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-[3.5rem] font-bold text-white mb-6 leading-[1.1] tracking-tight">
+              {settings.heroTitle || "Buy, Sell & Trade Coins & Precious Metals"}
+            </h1>
+            <p className="text-lg sm:text-xl text-[#FAF7F0]/70 mb-10 max-w-2xl leading-relaxed">
+              {settings.heroSubtitle || settings.tagline}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                href="/inventory"
+                className={cn(
+                  "inline-flex items-center justify-center px-8 py-4 rounded-lg",
+                  "bg-gradient-to-r from-[#C9A84C] to-[#B8942E] text-white font-semibold text-lg",
+                  "transition-all duration-300",
+                  "shadow-lg shadow-[#C9A84C]/25",
+                  "hover:shadow-xl hover:shadow-[#C9A84C]/35 hover:-translate-y-0.5"
+                )}
+              >
+                Browse Inventory
+              </Link>
+              <Link
+                href="/appraisal"
+                className={cn(
+                  "inline-flex items-center justify-center px-8 py-4 rounded-lg",
+                  "border-2 border-[#C9A84C]/60 text-[#C9A84C] hover:bg-[#C9A84C] hover:text-white hover:border-[#C9A84C]",
+                  "font-semibold text-lg transition-all duration-300",
+                  "hover:-translate-y-0.5"
+                )}
+              >
+                Get a Free Appraisal
+              </Link>
+            </div>
           </div>
         </div>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#1B2A4A] to-transparent" />
       </section>
+
+      {/* ====== TRUST BADGES ====== */}
+      <div className="relative z-10 bg-[#1B2A4A] border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 py-6">
+            {trustBadges.map((badge) => (
+              <div key={badge.label} className="flex items-center gap-2.5 text-[#FAF7F0]/50">
+                <badge.icon className="h-4 w-4 text-[#C9A84C]/70" />
+                <span className="text-xs sm:text-sm font-medium tracking-wide">{badge.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* ====== SPOT PRICES ====== */}
       <SpotPriceBar />
 
       {/* ====== FEATURED COINS ====== */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-[var(--surface-alt)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-3">
+          <div className="text-center mb-12">
+            <p className="text-[#C9A84C] text-sm font-semibold uppercase tracking-widest mb-3">Our Collection</p>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-4">
               Featured Coins
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-500 max-w-2xl mx-auto text-lg">
               Hand-picked selections from our current inventory
             </p>
           </div>
           <FeaturedCoins />
-          <div className="text-center mt-8">
+          <div className="text-center mt-12">
             <Link
               href="/inventory"
               className={cn(
-                "inline-flex items-center px-6 py-3 rounded-lg font-semibold",
+                "inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-semibold",
                 "text-[#C9A84C] border-2 border-[#C9A84C]",
-                "hover:bg-[#C9A84C] hover:text-white transition-colors"
+                "hover:bg-[#C9A84C] hover:text-white transition-all duration-300",
+                "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#C9A84C]/20"
               )}
             >
-              View Full Inventory &rarr;
+              View Full Inventory
+              <span className="text-lg">&rarr;</span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* ====== WE BUY & SELL SECTION ====== */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-3">
+          <div className="text-center mb-14">
+            <p className="text-[#C9A84C] text-sm font-semibold uppercase tracking-widest mb-3">Our Services</p>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-4">
               We Buy &amp; Sell
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-500 max-w-2xl mx-auto text-lg">
               Whether you&apos;re looking to buy or sell, we offer fair prices and expert knowledge.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
+            {services.map((service, index) => (
               <div
                 key={service.title}
                 className={cn(
-                  "bg-gray-50 rounded-xl p-6",
-                  "border border-gray-100",
-                  "hover:border-[#C9A84C]/50 hover:shadow-lg transition-all duration-300",
-                  "group"
+                  "relative bg-[var(--surface-alt)] rounded-xl p-7",
+                  "border border-[var(--border)]",
+                  "hover:border-[#C9A84C]/40 hover:shadow-xl hover:shadow-[#C9A84C]/5 transition-all duration-400",
+                  "group hover:-translate-y-1"
                 )}
               >
-                <service.icon className="w-10 h-10 text-[#C9A84C] mb-4 group-hover:scale-110 transition-transform" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#C9A84C]/10 mb-5 transition-all duration-300 group-hover:bg-[#C9A84C]/20 group-hover:scale-110">
+                  <service.icon className="w-6 h-6 text-[#C9A84C]" />
+                </div>
                 <h3 className="font-serif text-xl font-bold text-[#1B2A4A] mb-2">
                   {service.title}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-gray-500 text-sm leading-relaxed">
                   {service.description}
                 </p>
               </div>
@@ -197,10 +253,11 @@ export default async function HomePage() {
 
       {/* ====== TESTIMONIALS ====== */}
       {testimonials.length > 0 && (
-        <section className="py-16 bg-gray-50">
+        <section className="py-20 bg-[var(--surface-alt)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-3">
+            <div className="text-center mb-12">
+              <p className="text-[#C9A84C] text-sm font-semibold uppercase tracking-widest mb-3">Testimonials</p>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-4">
                 What Our Customers Say
               </h2>
             </div>
@@ -214,16 +271,18 @@ export default async function HomePage() {
                 />
               ))}
             </div>
-            <div className="text-center mt-8">
+            <div className="text-center mt-12">
               <Link
                 href="/testimonials"
                 className={cn(
-                  "inline-flex items-center px-6 py-3 rounded-lg font-semibold",
+                  "inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-semibold",
                   "text-[#C9A84C] border-2 border-[#C9A84C]",
-                  "hover:bg-[#C9A84C] hover:text-white transition-colors"
+                  "hover:bg-[#C9A84C] hover:text-white transition-all duration-300",
+                  "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#C9A84C]/20"
                 )}
               >
-                See All Reviews &rarr;
+                See All Reviews
+                <span className="text-lg">&rarr;</span>
               </Link>
             </div>
           </div>
@@ -231,57 +290,64 @@ export default async function HomePage() {
       )}
 
       {/* ====== MAP & CONTACT ====== */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-3">
+          <div className="text-center mb-12">
+            <p className="text-[#C9A84C] text-sm font-semibold uppercase tracking-widest mb-3">Location</p>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1B2A4A] mb-4">
               Visit Us
             </h2>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
             {/* Map */}
-            <div className="bg-gray-200 rounded-xl overflow-hidden min-h-[300px] flex items-center justify-center">
+            <div className="bg-gray-100 rounded-2xl overflow-hidden min-h-[350px] flex items-center justify-center shadow-inner">
               {settings.googleMapsEmbed ? (
                 <div
-                  className="w-full h-full min-h-[300px]"
+                  className="w-full h-full min-h-[350px]"
                   dangerouslySetInnerHTML={{ __html: settings.googleMapsEmbed }}
                 />
               ) : (
-                <div className="text-center text-gray-500 p-8">
-                  <div className="text-4xl mb-2">&#128205;</div>
-                  <p>Google Maps embed will appear here</p>
+                <div className="text-center text-gray-400 p-8">
+                  <div className="text-5xl mb-3">&#128205;</div>
+                  <p className="font-medium">Google Maps embed will appear here</p>
                   <p className="text-sm mt-1">Configure in admin settings</p>
                 </div>
               )}
             </div>
 
             {/* Contact Info & Hours */}
-            <div className="space-y-6">
-              <div>
-                <h3 className="font-serif text-xl font-bold text-[#1B2A4A] mb-4">
+            <div className="space-y-8">
+              <div className="bg-[var(--surface-alt)] rounded-2xl p-7 border border-[var(--border)]">
+                <h3 className="font-serif text-xl font-bold text-[#1B2A4A] mb-5">
                   Contact Information
                 </h3>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <span className="text-[#C9A84C] mt-1">&#128205;</span>
-                    <span className="text-gray-700">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#C9A84C]/10">
+                      <span className="text-[#C9A84C] text-lg">&#128205;</span>
+                    </div>
+                    <span className="text-gray-600 pt-2">
                       {settings.address}, {settings.city}, {settings.state} {settings.zip}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[#C9A84C]">&#128222;</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#C9A84C]/10">
+                      <span className="text-[#C9A84C] text-lg">&#128222;</span>
+                    </div>
                     <a
                       href={`tel:${settings.phone}`}
-                      className="text-gray-700 hover:text-[#C9A84C] transition-colors"
+                      className="text-gray-600 hover:text-[#C9A84C] transition-colors duration-300"
                     >
                       {settings.phone}
                     </a>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[#C9A84C]">&#9993;</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#C9A84C]/10">
+                      <span className="text-[#C9A84C] text-lg">&#9993;</span>
+                    </div>
                     <a
                       href={`mailto:${settings.email}`}
-                      className="text-gray-700 hover:text-[#C9A84C] transition-colors"
+                      className="text-gray-600 hover:text-[#C9A84C] transition-colors duration-300"
                     >
                       {settings.email}
                     </a>
@@ -289,22 +355,23 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div>
-                <h3 className="font-serif text-xl font-bold text-[#1B2A4A] mb-4">
+              <div className="bg-[var(--surface-alt)] rounded-2xl p-7 border border-[var(--border)]">
+                <h3 className="font-serif text-xl font-bold text-[#1B2A4A] mb-5">
                   Store Hours
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {hours.map((h) => (
                     <div
                       key={h.day}
-                      className="flex justify-between text-sm border-b border-gray-100 pb-2"
+                      className="flex justify-between text-sm pb-3 border-b border-gray-100 last:border-0 last:pb-0"
                     >
                       <span className="font-medium text-gray-700">
                         {h.day}
                       </span>
                       <span className={cn(
+                        "font-medium",
                         h.closed
-                          ? "text-red-500"
+                          ? "text-red-400"
                           : "text-gray-600"
                       )}>
                         {h.closed ? "Closed" : `${h.open} - ${h.close}`}
@@ -319,12 +386,15 @@ export default async function HomePage() {
       </section>
 
       {/* ====== NEWSLETTER ====== */}
-      <section className="py-16 bg-[#1B2A4A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-3">
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1B2A4A] via-[#243558] to-[#1B2A4A]" />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(201,168,76,0.5) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-[#C9A84C] text-sm font-semibold uppercase tracking-widest mb-3">Stay Connected</p>
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-4">
             Stay Updated
           </h2>
-          <p className="text-gray-300 mb-8 max-w-xl mx-auto">
+          <p className="text-[#FAF7F0]/60 mb-10 max-w-xl mx-auto text-lg leading-relaxed">
             Subscribe to our newsletter for new inventory alerts, market updates, and exclusive offers.
           </p>
           <NewsletterForm />

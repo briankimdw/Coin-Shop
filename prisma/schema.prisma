@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -28,13 +29,13 @@ model CoinListing {
   grade         String?
   certification String?
   certNumber    String?
-  description   String?
+  description   String?  @db.Text
   costBasis     Float?
   askingPrice   Float
   quantity      Int      @default(1)
   featured      Boolean  @default(false)
   sold          Boolean  @default(false)
-  images        String   @default("[]")
+  images        String   @default("[]") @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   sales         Sale[]
@@ -45,11 +46,11 @@ model AppraisalRequest {
   name          String
   email         String
   phone         String?
-  description   String
-  images        String   @default("[]")
+  description   String   @db.Text
+  images        String   @default("[]") @db.Text
   contactMethod String   @default("email")
   status        String   @default("new")
-  adminNotes    String?
+  adminNotes    String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -60,7 +61,7 @@ model ContactSubmission {
   email     String
   phone     String?
   subject   String?
-  message   String
+  message   String   @db.Text
   status    String   @default("new")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,14 +71,14 @@ model BlogPost {
   id         String   @id @default(cuid())
   title      String
   slug       String   @unique
-  content    String
-  excerpt    String?
+  content    String   @db.Text
+  excerpt    String?  @db.Text
   coverImage String?
   published  Boolean  @default(false)
   author     String   @default("Admin")
-  tags       String   @default("[]")
+  tags       String   @default("[]") @db.Text
   metaTitle  String?
-  metaDesc   String?
+  metaDesc   String?  @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -94,16 +95,16 @@ model StoreSettings {
   email                String  @default("info@coinshop.com")
   heroTitle            String  @default("Buy, Sell & Trade Coins & Precious Metals")
   heroSubtitle         String  @default("Serving collectors and investors for over 25 years")
-  aboutText            String  @default("")
-  ownerBio             String  @default("")
+  aboutText            String  @default("") @db.Text
+  ownerBio             String  @default("") @db.Text
   yearsInBusiness      String  @default("25+")
-  memberships          String  @default("[]")
+  memberships          String  @default("[]") @db.Text
   logo                 String?
   bannerImage          String?
   isOpen               Boolean @default(true)
-  hoursJson            String  @default("[{\"day\":\"Monday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Tuesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Wednesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Thursday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Friday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Saturday\",\"open\":\"10:00 AM\",\"close\":\"3:00 PM\",\"closed\":false},{\"day\":\"Sunday\",\"open\":\"\",\"close\":\"\",\"closed\":true}]")
+  hoursJson            String  @default("[{\"day\":\"Monday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Tuesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Wednesday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Thursday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Friday\",\"open\":\"9:00 AM\",\"close\":\"5:00 PM\",\"closed\":false},{\"day\":\"Saturday\",\"open\":\"10:00 AM\",\"close\":\"3:00 PM\",\"closed\":false},{\"day\":\"Sunday\",\"open\":\"\",\"close\":\"\",\"closed\":true}]") @db.Text
   googleMapsUrl        String  @default("")
-  googleMapsEmbed      String  @default("")
+  googleMapsEmbed      String  @default("") @db.Text
   socialFacebook       String  @default("")
   socialInstagram      String  @default("")
   socialTwitter        String  @default("")
@@ -141,7 +142,7 @@ model Sale {
   coinListing   CoinListing @relation(fields: [coinListingId], references: [id])
   salePrice     Float
   soldAt        DateTime    @default(now())
-  notes         String?
+  notes         String?     @db.Text
   createdAt     DateTime    @default(now())
 }
 
@@ -150,7 +151,7 @@ model InquiryReply {
   inquiryId   String
   inquiryType String
   fromAdmin   Boolean  @default(true)
-  message     String
+  message     String   @db.Text
   sentTo      String
   sentAt      DateTime @default(now())
   createdAt   DateTime @default(now())
@@ -159,7 +160,7 @@ model InquiryReply {
 model Testimonial {
   id        String   @id @default(cuid())
   name      String
-  text      String
+  text      String   @db.Text
   rating    Int      @default(5)
   featured  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -174,8 +175,8 @@ model Appointment {
   timeSlot   String
   type       String
   status     String   @default("pending")
-  notes      String?
-  adminNotes String?
+  notes      String?  @db.Text
+  adminNotes String?  @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -185,14 +186,14 @@ model AppointmentSettings {
   slotDurationMin  Int    @default(30)
   maxPerSlot       Int    @default(1)
   advanceBookDays  Int    @default(30)
-  appointmentTypes String @default("[\"Appraisal\",\"Sell Coins\",\"Buy Consultation\",\"Collection Review\",\"Estate Evaluation\"]")
-  blockedDates     String @default("[]")
+  appointmentTypes String @default("[\"Appraisal\",\"Sell Coins\",\"Buy Consultation\",\"Collection Review\",\"Estate Evaluation\"]") @db.Text
+  blockedDates     String @default("[]") @db.Text
 }
 
 model WantToBuyItem {
   id          String   @id @default(cuid())
   title       String
-  description String?
+  description String?  @db.Text
   category    String   @default("Coins")
   priceRange  String?
   featured    Boolean  @default(false)
@@ -204,8 +205,8 @@ model WantToBuyItem {
 
 model FAQ {
   id        String   @id @default(cuid())
-  question  String
-  answer    String
+  question  String   @db.Text
+  answer    String   @db.Text
   sortOrder Int      @default(0)
   published Boolean  @default(true)
   createdAt DateTime @default(now())

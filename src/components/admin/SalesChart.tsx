@@ -51,16 +51,16 @@ export default function SalesChart({ data }: SalesChartProps) {
             >
               {/* Tooltip */}
               {hoveredIndex === i && (
-                <div className="absolute bottom-full mb-1 z-10 bg-gray-900 text-white text-xs rounded-lg px-3 py-1.5 whitespace-nowrap shadow-lg pointer-events-none">
-                  <div className="font-medium">{dateLabel}</div>
-                  <div>{formatPrice(d.revenue)}</div>
+                <div className="absolute bottom-full mb-2 z-10 bg-[#1B2A4A] text-white text-[11px] rounded-lg px-3 py-2 whitespace-nowrap shadow-xl pointer-events-none border border-white/10">
+                  <div className="font-medium text-white/70">{dateLabel}</div>
+                  <div className="font-bold text-[#C9A84C]">{formatPrice(d.revenue)}</div>
                 </div>
               )}
 
               {/* Bar container - grows from bottom */}
               <div className="flex-1 w-full flex items-end">
                 <div
-                  className="w-full bg-[#C9A84C] rounded-t-sm transition-all duration-150 hover:bg-[#b8963e] min-h-[2px]"
+                  className="w-full bg-[#C9A84C]/80 rounded-t transition-all duration-150 hover:bg-[#C9A84C] min-h-[2px]"
                   style={{
                     height: d.revenue > 0 ? `${Math.max(barHeight, 4)}px` : "2px",
                     opacity: d.revenue > 0 ? 1 : 0.3,

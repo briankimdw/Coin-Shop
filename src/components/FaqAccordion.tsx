@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface FaqItem {
   id: string;
@@ -18,32 +19,44 @@ export default function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
         return (
           <div
             key={faq.id}
-            className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+            className={cn(
+              "bg-white rounded-xl border overflow-hidden transition-all duration-400",
+              isOpen ? "border-[#C9A84C]/30 shadow-lg shadow-[#C9A84C]/5" : "border-[var(--border)] hover:border-[#C9A84C]/20"
+            )}
           >
             <button
               onClick={() => setOpenId(isOpen ? null : faq.id)}
-              className="w-full flex items-center justify-between px-6 py-4 text-left"
+              className="w-full flex items-center justify-between px-7 py-5 text-left group"
             >
               <span
-                className={`font-serif text-lg font-semibold transition-colors ${
-                  isOpen ? "text-[#C9A84C]" : "text-[#1B2A4A]"
-                }`}
+                className={cn(
+                  "font-serif text-[17px] font-bold transition-colors duration-300 pr-4",
+                  isOpen ? "text-[#C9A84C]" : "text-[#1B2A4A] group-hover:text-[#C9A84C]"
+                )}
               >
                 {faq.question}
               </span>
               <span
-                className={`ml-4 text-xl transition-transform ${
-                  isOpen ? "rotate-45" : ""
-                } text-[#C9A84C]`}
+                className={cn(
+                  "ml-4 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-lg transition-all duration-300",
+                  isOpen
+                    ? "bg-[#C9A84C] text-white rotate-45"
+                    : "bg-[#C9A84C]/10 text-[#C9A84C]"
+                )}
               >
                 +
               </span>
             </button>
-            {isOpen && (
-              <div className="px-6 pb-5 text-gray-600 leading-relaxed">
+            <div
+              className={cn(
+                "overflow-hidden transition-all duration-400",
+                isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+              )}
+            >
+              <div className="px-7 pb-6 text-gray-600 leading-relaxed text-[15px]">
                 {faq.answer}
               </div>
-            )}
+            </div>
           </div>
         );
       })}

@@ -32,9 +32,9 @@ interface Reply {
 }
 
 const statusColors: Record<string, string> = {
-  new: "bg-red-100 text-red-700",
-  read: "bg-amber-100 text-amber-700",
-  responded: "bg-green-100 text-green-700",
+  new: "bg-red-50 text-red-600 ring-1 ring-red-200",
+  read: "bg-amber-50 text-amber-600 ring-1 ring-amber-200",
+  responded: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200",
 };
 
 function parseImages(images: string | string[] | undefined): string[] {
@@ -185,31 +185,37 @@ export default function InquiriesPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Inquiries</h1>
-        {newCount > 0 && (
-          <p className="text-sm text-red-500 mt-1">{newCount} new {newCount === 1 ? "inquiry" : "inquiries"}</p>
-        )}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">Inquiries</h1>
+          <p className="text-sm text-gray-400 mt-0.5">
+            {newCount > 0 ? (
+              <span className="text-red-500 font-medium">{newCount} new {newCount === 1 ? "inquiry" : "inquiries"}</span>
+            ) : (
+              "Manage contact and appraisal requests"
+            )}
+          </p>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
+      <div className="flex gap-0.5 mb-6 bg-gray-100 p-0.5 rounded-lg w-fit">
         <button
           onClick={() => { setActiveTab("contact"); setExpandedId(null); }}
-          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
             activeTab === "contact"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-500 hover:text-gray-900"
+              ? "bg-white text-[#1B2A4A] shadow-sm"
+              : "text-gray-400 hover:text-gray-600"
           }`}
         >
           Contact Submissions
         </button>
         <button
           onClick={() => { setActiveTab("appraisal"); setExpandedId(null); }}
-          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${
             activeTab === "appraisal"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-500 hover:text-gray-900"
+              ? "bg-white text-[#1B2A4A] shadow-sm"
+              : "text-gray-400 hover:text-gray-600"
           }`}
         >
           Appraisal Requests
@@ -223,7 +229,7 @@ export default function InquiriesPage() {
             <FaSpinner className="animate-spin text-3xl text-[#C9A84C]" />
           </div>
         ) : inquiries.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+          <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
             <FaEnvelope className="text-5xl mx-auto mb-4 text-gray-200" />
             <p className="text-gray-500 font-medium">
               No {activeTab === "contact" ? "contact" : "appraisal"} inquiries yet
@@ -240,7 +246,7 @@ export default function InquiriesPage() {
             return (
               <div
                 key={inquiry.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all"
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all"
               >
                 {/* Header row */}
                 <button

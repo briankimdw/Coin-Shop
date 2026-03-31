@@ -154,8 +154,8 @@ export default function FaqAdminPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-gray-900">FAQ</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">FAQ</h1>
+          <p className="text-sm text-gray-400 mt-0.5">
             {faqs.length} questions
           </p>
         </div>
@@ -167,9 +167,9 @@ export default function FaqAdminPage() {
               setShowForm(true);
             }
           }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm shadow-[#C9A84C]/25 text-sm"
         >
-          <FaPlus className="text-sm" />
+          <FaPlus className="text-xs" />
           {showForm ? "Cancel" : "Add FAQ"}
         </button>
       </div>
@@ -178,9 +178,9 @@ export default function FaqAdminPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 space-y-4"
+          className="bg-white rounded-xl border border-gray-200 p-6 mb-6 space-y-4"
         >
-          <h2 className="font-serif text-lg font-bold text-gray-900">
+          <h2 className="text-base font-bold text-[#1B2A4A]">
             {editingId ? "Edit FAQ" : "New FAQ"}
           </h2>
           <div>
@@ -266,7 +266,7 @@ export default function FaqAdminPage() {
           {faqs.map((f, idx) => (
             <div
               key={f.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-5"
+              className="bg-white rounded-xl border border-gray-200 p-5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -276,10 +276,10 @@ export default function FaqAdminPage() {
                     </span>
                     <button
                       onClick={() => togglePublished(f)}
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                         f.published
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200"
+                          : "bg-amber-50 text-amber-600 ring-1 ring-amber-200"
                       }`}
                     >
                       {f.published ? "Published" : "Draft"}

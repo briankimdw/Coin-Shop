@@ -48,26 +48,26 @@ export default function BlogManagementPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1B2A4A]">
             Blog Posts
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-400 mt-0.5">
             {posts.length} posts
           </p>
         </div>
         <Link
           href="/admin/blog/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm hover:shadow-md"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#C9A84C] hover:bg-[#b8963e] text-white rounded-lg transition-all font-medium shadow-sm shadow-[#C9A84C]/25 text-sm"
         >
-          <FaPlus className="text-sm" /> New Post
+          <FaPlus className="text-xs" /> New Post
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200/80 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-gray-50/80 border-b border-gray-200/80">
                 <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Title
                 </th>
@@ -114,8 +114,8 @@ export default function BlogManagementPage() {
                       <span
                         className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${
                           post.published
-                            ? "bg-green-100 text-green-700"
-                            : "bg-amber-100 text-amber-700"
+                            ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200"
+                            : "bg-amber-50 text-amber-600 ring-1 ring-amber-200"
                         }`}
                       >
                         {post.published ? "Published" : "Draft"}
