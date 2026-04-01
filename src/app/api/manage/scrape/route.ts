@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyManageAuth, unauthorizedResponse } from "@/lib/manage-auth";
 
-const API_KEY = process.env.GOOGLE_API_KEY || "";
+export const dynamic = "force-dynamic";
 
 function assessWebsite(url: string): string {
   if (!url) return "NO WEBSITE";
@@ -13,104 +13,210 @@ function assessWebsite(url: string): string {
   return "Has Website";
 }
 
-async function geocode(address: string) {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  if (!data.results || data.results.length === 0) {
-    throw new Error(`Could not geocode "${address}"`);
+async function scrapeYelp(query: string, location: string): Promise<Array<Record<string, unknown>>> {
+  const url = `https://www.yelp.com/search?find_desc=${encodeURIComponent(query)}&find_loc=${encodeURIComponent(location)}`;
+
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+  });
+
+  if (!res.ok) return [];
+
+  const html = await res.text();
+
+  // Extract JSON-LD structured data from Yelp pages
+  const results: Array<Record<string, unknown>> = [];
+
+  // Parse business cards from Yelp HTML
+  // Yelp embeds business data in script tags as JSON
+  const scriptMatches = html.match(/<!--(\{[\s\S]*?\})-->/g) || [];
+  for (const match of scriptMatches) {
+    try {
+      const json = JSON.parse(match.replace("<!--", "").replace("-->", ""));
+      if (json?.searchPageProps?.mainContentComponentsListProps) {
+        const items = json.searchPageProps.mainContentComponentsListProps;
+        for (const item of items) {
+          if (item?.bizId) {
+            results.push({
+              name: item.searchResultBusiness?.name || "",
+              address: [
+                item.searchResultBusiness?.addressLines?.[0] || "",
+                item.searchResultBusiness?.addressLines?.[1] || "",
+              ].filter(Boolean).join(", "),
+              phone: item.searchResultBusiness?.phone || "",
+              rating: item.searchResultBusiness?.rating || null,
+              reviews: item.searchResultBusiness?.reviewCount || 0,
+              website: "",
+              mapsUrl: `https://www.yelp.com/biz/${item.bizId}`,
+            });
+          }
+        }
+      }
+    } catch {
+      // Not valid JSON, skip
+    }
   }
-  const loc = data.results[0].geometry.location;
-  return { lat: loc.lat, lng: loc.lng, formatted: data.results[0].formatted_address };
+
+  // Fallback: regex parsing from HTML if JSON extraction didn't work
+  if (results.length === 0) {
+    // Try to extract from regular HTML patterns
+    const namePattern = /data-testid="serp-ia-title"[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/g;
+    const names: string[] = [];
+    let nameMatch;
+    while ((nameMatch = namePattern.exec(html)) !== null) {
+      names.push(nameMatch[1].trim());
+    }
+
+    // Extract addresses
+    const addrPattern = /class="css-[^"]*"[^>]*>(\d+[^<]{5,60}(?:St|Ave|Rd|Dr|Blvd|Ln|Way|Ct|Pl|Pkwy|Hwy|Cir)[^<]{0,40})<\/span>/gi;
+    const addresses: string[] = [];
+    let addrMatch;
+    while ((addrMatch = addrPattern.exec(html)) !== null) {
+      addresses.push(addrMatch[1].trim());
+    }
+
+    // Extract phone numbers
+    const phonePattern = /\(?(\d{3})\)?[\s.-]?(\d{3})[\s.-]?(\d{4})/g;
+    const phones: string[] = [];
+    let phoneMatch;
+    while ((phoneMatch = phonePattern.exec(html)) !== null) {
+      phones.push(`(${phoneMatch[1]}) ${phoneMatch[2]}-${phoneMatch[3]}`);
+    }
+    // Deduplicate phones
+    const uniquePhones = Array.from(new Set(phones));
+
+    for (let i = 0; i < names.length; i++) {
+      results.push({
+        name: names[i],
+        address: addresses[i] || "",
+        phone: uniquePhones[i] || "",
+        rating: null,
+        reviews: 0,
+        website: "",
+        mapsUrl: "",
+      });
+    }
+  }
+
+  return results;
 }
 
-async function textSearch(query: string, lat: number, lng: number, radius: number) {
-  const url = "https://places.googleapis.com/v1/places:searchText";
+async function scrapeYellowPages(query: string, location: string): Promise<Array<Record<string, unknown>>> {
+  const url = `https://www.yellowpages.com/search?search_terms=${encodeURIComponent(query)}&geo_location_terms=${encodeURIComponent(location)}`;
+
   const res = await fetch(url, {
-    method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": API_KEY,
-      "X-Goog-FieldMask":
-        "places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.internationalPhoneNumber,places.websiteUri,places.googleMapsUri,places.rating,places.userRatingCount,places.businessStatus",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml",
+      "Accept-Language": "en-US,en;q=0.9",
     },
-    body: JSON.stringify({
-      textQuery: query,
-      locationBias: {
-        circle: {
-          center: { latitude: lat, longitude: lng },
-          radius: radius,
-        },
-      },
-      maxResultCount: 20,
-      languageCode: "en",
-    }),
   });
-  const data = await res.json();
-  return data.places || [];
+
+  if (!res.ok) return [];
+
+  const html = await res.text();
+  const results: Array<Record<string, unknown>> = [];
+
+  // YellowPages uses structured HTML with clear class names
+  // Extract business names, addresses, phones from the page
+  const businessPattern = /<a class="business-name"[^>]*>.*?<span>([^<]+)<\/span>/g;
+  const addressPattern = /<div class="street-address">([^<]+)<\/div>/g;
+  const localityPattern = /<div class="locality">([^<]+)<\/div>/g;
+  const phonePatternYP = /<div class="phones phone primary">([^<]+)<\/div>/g;
+  const websitePattern = /<a class="track-visit-website"[^>]*href="([^"]+)"/g;
+
+  const names: string[] = [];
+  const addrs: string[] = [];
+  const cities: string[] = [];
+  const phones: string[] = [];
+  const websites: string[] = [];
+
+  let m;
+  while ((m = businessPattern.exec(html)) !== null) names.push(m[1].trim());
+  while ((m = addressPattern.exec(html)) !== null) addrs.push(m[1].trim());
+  while ((m = localityPattern.exec(html)) !== null) cities.push(m[1].trim());
+  while ((m = phonePatternYP.exec(html)) !== null) phones.push(m[1].trim());
+  while ((m = websitePattern.exec(html)) !== null) websites.push(m[1].trim());
+
+  for (let i = 0; i < names.length; i++) {
+    const addr = [addrs[i] || "", cities[i] || ""].filter(Boolean).join(", ");
+    const website = websites[i] || "";
+    results.push({
+      name: names[i],
+      address: addr,
+      phone: phones[i] || "",
+      rating: null,
+      reviews: 0,
+      website,
+      webStatus: assessWebsite(website),
+      mapsUrl: "",
+    });
+  }
+
+  return results;
 }
 
 export async function POST(req: NextRequest) {
-  
-  const authed = await verifyManageAuth(); if (!authed) return unauthorizedResponse();
-
-  if (!API_KEY) {
-    return NextResponse.json(
-      { error: "GOOGLE_API_KEY not configured. Add it to your .env file." },
-      { status: 400 }
-    );
-  }
+  const authed = await verifyManageAuth();
+  if (!authed) return unauthorizedResponse();
 
   try {
-    const { location, radius = 30000 } = await req.json();
+    const { location } = await req.json();
     if (!location) {
       return NextResponse.json({ error: "Location is required" }, { status: 400 });
     }
 
-    const geo = await geocode(location);
+    const queries = ["coin shop", "coin dealer", "precious metals dealer", "gold silver dealer"];
+    const allResults = new Map<string, Record<string, unknown>>();
 
-    const queries = [
-      "coin shop",
-      "coin dealer",
-      "coin store",
-      "precious metals dealer",
-      "gold silver dealer",
-      "numismatic",
-      "coin and bullion",
-    ];
+    // Scrape from multiple sources in parallel
+    const scrapeJobs = queries.flatMap((query) => [
+      scrapeYellowPages(query, location).catch(() => []),
+      scrapeYelp(query, location).catch(() => []),
+    ]);
 
-    const allPlaces = new Map<string, Record<string, unknown>>();
+    const allScrapeResults = await Promise.all(scrapeJobs);
 
-    for (const query of queries) {
-      try {
-        const places = await textSearch(query, geo.lat, geo.lng, radius);
-        for (const place of places) {
-          const name = place.displayName?.text || "Unknown";
-          const addr = place.formattedAddress || "";
-          const key = `${name}|${addr}`.toLowerCase();
-          if (!allPlaces.has(key)) {
-            allPlaces.set(key, place);
+    for (const results of allScrapeResults) {
+      for (const biz of results) {
+        const name = String(biz.name || "").trim();
+        if (!name) continue;
+        const key = name.toLowerCase();
+        if (!allResults.has(key)) {
+          // Assess website if not already done
+          if (!biz.webStatus) {
+            biz.webStatus = assessWebsite(String(biz.website || ""));
           }
+          allResults.set(key, biz);
+        } else {
+          // Merge: fill in missing data from other sources
+          const existing = allResults.get(key)!;
+          if (!existing.phone && biz.phone) existing.phone = biz.phone;
+          if (!existing.address && biz.address) existing.address = biz.address;
+          if (!existing.website && biz.website) {
+            existing.website = biz.website;
+            existing.webStatus = assessWebsite(String(biz.website));
+          }
+          if (!existing.rating && biz.rating) existing.rating = biz.rating;
         }
-      } catch {
-        // Skip failed queries
       }
     }
 
-    const results = Array.from(allPlaces.values()).map((place) => {
-      const website = (place.websiteUri as string) || "";
-      return {
-        name: (place.displayName as { text: string })?.text || "Unknown",
-        address: (place.formattedAddress as string) || "",
-        phone: (place.nationalPhoneNumber as string) || (place.internationalPhoneNumber as string) || "",
-        website,
-        webStatus: assessWebsite(website),
-        rating: (place.rating as number) || null,
-        reviews: (place.userRatingCount as number) || 0,
-        mapsUrl: (place.googleMapsUri as string) || "",
-        businessStatus: (place.businessStatus as string) || "",
-      };
-    });
+    const results = Array.from(allResults.values()).map((biz) => ({
+      name: String(biz.name || ""),
+      address: String(biz.address || ""),
+      phone: String(biz.phone || ""),
+      website: String(biz.website || ""),
+      webStatus: String(biz.webStatus || "unknown"),
+      rating: biz.rating as number | null,
+      reviews: Number(biz.reviews || 0),
+      mapsUrl: String(biz.mapsUrl || ""),
+      businessStatus: "",
+    }));
 
     // Sort: no website first
     const priority: Record<string, number> = {
@@ -130,7 +236,7 @@ export async function POST(req: NextRequest) {
     const hasWebsite = results.filter((r) => r.webStatus === "Has Website").length;
 
     return NextResponse.json({
-      location: geo.formatted,
+      location,
       results,
       summary: {
         total: results.length,
